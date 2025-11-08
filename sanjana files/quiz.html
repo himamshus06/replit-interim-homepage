@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced PDF to Quiz Generator with Referential Options</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #3a0ca3;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Upload Area */
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #4361ee;
+            border-radius: 12px;
+            padding: 50px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .upload-area.active {
+            border-color: #3a0ca3;
+            background: #eef2ff;
+            transform: scale(0.99);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+
+        .upload-text h3 {
+            color: #3a0ca3;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .upload-text p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .browse-btn {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .browse-btn:hover {
+            background: #3a0ca3;
+            transform: translateY(-2px);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-info.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        /* Quiz Settings */
+        .quiz-settings {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .quiz-settings.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .settings-title {
+            color: #3a0ca3;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+
+        .generate-btn {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .generate-btn:hover {
+            background: #3a0ca3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Extracted Content Preview */
+        .content-preview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .content-preview.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .preview-title {
+            color: #3a0ca3;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .quiz-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .quiz-title {
+            color: #3a0ca3;
+            font-size: 1.5rem;
+        }
+
+        .question-counter {
+            background: #4361ee;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            border-color: #4361ee;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #212529;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .option:hover {
+            background: #f8f9fa;
+            border-color: #4361ee;
+        }
+
+        .option.selected {
+            background: #4361ee;
+            color: white;
+            border-color: #4361ee;
+        }
+
+        .option-letter {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .option.selected .option-letter {
+            background: white;
+            color: #4361ee;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-main {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .option-reference {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .option.selected .option-reference {
+            opacity: 0.9;
+        }
+
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Results */
+        .results-container {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3a0ca3;
+            margin-bottom: 10px;
+        }
+
+        .score-text {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .feedback-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .feedback-title {
+            color: #3a0ca3;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .answer-review {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 4px solid #dc3545;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .answer-review.correct {
+            border-left-color: #28a745;
+        }
+
+        .page-reference {
+            background: #4361ee;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .restart-btn {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            background: #3a0ca3;
+            transform: translateY(-2px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .option {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .option-letter {
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Advanced PDF to Quiz Generator</h1>
+            <p>Upload PDF/Image notes - Get context-specific questions with referential options</p>
+        </div>
+
+        <div class="content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📚</div>
+                    <div class="upload-text">
+                        <h3>Drag & Drop Your Study Materials Here</h3>
+                        <p>Supported formats: PDF, Images (JPG, PNG), Text Documents</p>
+                        <button class="browse-btn">Browse Files</button>
+                    </div>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt">
+                </div>
+                
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Processing Document: 0%</div>
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <!-- File info will be displayed here -->
+                </div>
+                
+                <div class="content-preview" id="contentPreview">
+                    <h4 class="preview-title">Extracted Content Preview</h4>
+                    <div id="previewText"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Settings -->
+            <div class="quiz-settings" id="quizSettings">
+                <h2 class="settings-title">Customize Your Quiz</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="questionCount">Number of Questions</label>
+                        <input type="number" id="questionCount" min="1" max="20" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty Level</label>
+                        <select id="difficulty">
+                            <option value="easy">Easy (Basic Recall)</option>
+                            <option value="medium" selected>Medium (Understanding)</option>
+                            <option value="advanced">Advanced (Application)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="generate-btn" id="generateBtn">Generate Context-Specific Quiz</button>
+            </div>
+
+            <!-- Quiz Container -->
+            <div class="quiz-container" id="quizContainer">
+                <div class="quiz-header">
+                    <h2 class="quiz-title">Quiz Generated from Your Document</h2>
+                    <div class="question-counter">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">5</span></div>
+                </div>
+                <div id="questionsList">
+                    <!-- Questions will be dynamically added here -->
+                </div>
+                <button class="submit-btn" id="submitQuiz">Submit Answers</button>
+            </div>
+
+            <!-- Results Container -->
+            <div class="results-container" id="resultsContainer">
+                <div class="results-header">
+                    <div class="score-display" id="scoreDisplay">0/5</div>
+                    <div class="score-text" id="scoreText">Your Quiz Results</div>
+                </div>
+                <div class="feedback-area">
+                    <h3 class="feedback-title">Detailed Performance Analysis</h3>
+                    <p id="feedbackText">Based on your performance, here are areas you might want to focus on...</p>
+                    <div id="correctAnswers">
+                        <!-- Correct answers with page references will be shown here -->
+                    </div>
+                </div>
+                <button class="restart-btn" id="restartBtn">Create New Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const state = {
+            currentFile: null,
+            extractedContent: [],
+            quizSettings: {
+                questionCount: 5,
+                difficulty: 'medium'
+            },
+            quiz: {
+                questions: [],
+                answers: [],
+                userAnswers: []
+            }
+        };
+
+        // DOM ELEMENTS 
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const contentPreview = document.getElementById('contentPreview');
+        const previewText = document.getElementById('previewText');
+        const quizSettings = document.getElementById('quizSettings');
+        const generateBtn = document.getElementById('generateBtn');
+        const quizContainer = document.getElementById('quizContainer');
+        const questionsList = document.getElementById('questionsList');
+        const submitQuizBtn = document.getElementById('submitQuiz');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scoreText = document.getElementById('scoreText');
+        const feedbackText = document.getElementById('feedbackText');
+        const correctAnswers = document.getElementById('correctAnswers');
+        const restartBtn = document.getElementById('restartBtn');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const totalQuestionsSpan = document.getElementById('totalQuestions');
+
+        // Set up PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        // Event Listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        generateBtn.addEventListener('click', generateQuiz);
+        submitQuizBtn.addEventListener('click', submitQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // File Handling Functions
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('active');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+            
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        }
+
+        function handleFileSelect(e) {
+            if (e.target.files.length) {
+                handleFiles(e.target.files);
+            }
+        }
+
+        function handleFiles(files) {
+            const file = files[0];
+            if (!file) return;
+            
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'text/plain', 
+                                 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please upload a PDF, image, or document file.');
+                return;
+            }
+            
+            state.currentFile = file;
+            
+            // Display file info
+            fileInfo.innerHTML = `
+                <strong>File Selected:</strong> ${file.name}<br>
+                <strong>Type:</strong> ${file.type}<br>
+                <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB
+            `;
+            fileInfo.classList.add('active');
+            
+            // Process the file based on type
+            if (file.type === 'application/pdf') {
+                processPDF(file);
+            } else if (file.type.startsWith('image/')) {
+                processImage(file);
+            } else {
+                processTextFile(file);
+            }
+        }
+
+        // PDF Processing with OCR
+        async function processPDF(file) {
+            showProgress(0, 'Loading PDF...');
+            
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                state.extractedContent = [];
+                const totalPages = pdf.numPages;
+                
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    showProgress((pageNum - 1) / totalPages * 50, `Processing page ${pageNum}/${totalPages}...`);
+                    
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 2.0 });
+                    
+                    // Create canvas for OCR
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    
+                    await page.render(renderContext).promise;
+                    
+                    // Use Tesseract.js for OCR
+                    showProgress(50 + ((pageNum - 1) / totalPages * 40), `Performing OCR on page ${pageNum}...`);
+                    
+                    const { data: { text, lines } } = await Tesseract.recognize(
+                        canvas,
+                        'eng',
+                        { 
+                            logger: m => {
+                                if (m.status === 'recognizing text') {
+                                    const progress = 50 + ((pageNum - 1) / totalPages * 40) + (m.progress * 40 / totalPages);
+                                    showProgress(progress, `OCR: ${Math.round(m.progress * 100)}%`);
+                                }
+                            }
+                        }
+                    );
+                    
+                    // Store content with page reference
+                    if (text.trim().length > 0) {
+                        state.extractedContent.push({
+                            text: text,
+                            page: pageNum,
+                            type: 'paragraph',
+                            lines: lines || []
+                        });
+                    }
+                }
+                
+                showProgress(100, 'PDF processing complete!');
+                showContentPreview();
+                
+            } catch (error) {
+                console.error('Error processing PDF:', error);
+                alert('Error processing PDF. Please try another file.');
+                progressContainer.style.display = 'none';
+            }
+        }
+
+        // Image Processing
+        async function processImage(file) {
+            showProgress(0, 'Processing image...');
+            
+            try {
+                const { data: { text, lines } } = await Tesseract.recognize(
+                    file,
+                    'eng',
+                    { 
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                showProgress(m.progress * 100, `OCR: ${Math.round(m.progress * 100)}%`);
+                            }
+                        }
+                    }
+                );
+                
+                state.extractedContent = [{
+                    text: text,
+                    page: 1,
+                    type: 'image',
+                    lines: lines || []
+                }];
+                
+                showProgress(100, 'Image processing complete!');
+                showContentPreview();
+                
+            } catch (error) {
+                console.error('Error processing image:', error);
+                alert('Error processing image. Please try another file.');
+                progressContainer.style.display = 'none';
+            }
+        }
+
+        // Text File Processing
+        async function processTextFile(file) {
+            showProgress(0, 'Reading text file...');
+            
+            try {
+                const text = await file.text();
+                
+                state.extractedContent = [{
+                    text: text,
+                    page: 1,
+                    type: 'text',
+                    lines: text.split('\n').map(line => ({ text: line }))
+                }];
+                
+                showProgress(100, 'Text file processing complete!');
+                showContentPreview();
+                
+            } catch (error) {
+                console.error('Error processing text file:', error);
+                alert('Error processing text file. Please try another file.');
+                progressContainer.style.display = 'none';
+            }
+        }
+
+        function showProgress(percent, message) {
+            progressContainer.style.display = 'block';
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = message;
+        }
+
+        function showContentPreview() {
+            const allText = state.extractedContent.map(content => content.text).join('\n\n');
+            previewText.textContent = allText.length > 500 
+                ? allText.substring(0, 500) + '...' 
+                : allText;
+            contentPreview.classList.add('active');
+            
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+                quizSettings.classList.add('active');
+            }, 1000);
+        }
+
+        // Enhanced Quiz Generation with Referential Options
+        function generateQuiz() {
+            const questionCount = parseInt(document.getElementById('questionCount').value);
+            const difficulty = document.getElementById('difficulty').value;
+            
+            if (questionCount < 1 || questionCount > 20) {
+                alert('Please enter a number between 1 and 20 for questions.');
+                return;
+            }
+            
+            if (state.extractedContent.length === 0) {
+                alert('No content extracted from document. Please try a different file.');
+                return;
+            }
+            
+            state.quizSettings.questionCount = questionCount;
+            state.quizSettings.difficulty = difficulty;
+            
+            generateAdvancedQuestionsWithReferences();
+            displayQuiz();
+        }
+
+        function generateAdvancedQuestionsWithReferences() {
+            const questions = [];
+            const usedContent = new Set();
+            
+            // Extract key information from content
+            const keyConcepts = extractKeyConcepts();
+            const definitions = extractDefinitions();
+            const processes = extractProcesses();
+            const comparisons = extractComparisons();
+            const examples = extractExamples();
+            
+            // Generate different types of questions based on difficulty
+            const questionTypes = getQuestionTypesForDifficulty();
+            
+            for (let i = 0; i < state.quizSettings.questionCount; i++) {
+                const questionType = questionTypes[i % questionTypes.length];
+                let question = null;
+                
+                switch (questionType) {
+                    case 'definition':
+                        question = generateDefinitionQuestionWithReferences(definitions, i);
+                        break;
+                    case 'fillBlank':
+                        question = generateFillBlankQuestionWithReferences(i);
+                        break;
+                    case 'process':
+                        question = generateProcessQuestionWithReferences(processes, i);
+                        break;
+                    case 'comparison':
+                        question = generateComparisonQuestionWithReferences(comparisons, i);
+                        break;
+                    case 'concept':
+                        question = generateConceptQuestionWithReferences(keyConcepts, i);
+                        break;
+                    case 'example':
+                        question = generateExampleQuestionWithReferences(examples, i);
+                        break;
+                }
+                
+                if (question && !usedContent.has(question.sourceContent)) {
+                    questions.push(question);
+                    usedContent.add(question.sourceContent);
+                }
+                
+                // If we can't generate enough unique questions, break
+                if (questions.length >= state.quizSettings.questionCount) break;
+            }
+            
+            state.quiz.questions = questions;
+            state.quiz.userAnswers = new Array(questions.length).fill(-1);
+        }
+
+        function generateDefinitionQuestionWithReferences(definitions, id) {
+            if (definitions.length === 0) return null;
+            
+            const def = definitions[Math.floor(Math.random() * definitions.length)];
+            
+            // Create referential options
+            const options = [
+                {
+                    main: def.term,
+                    reference: `Refers to the definition provided in the document`
+                }
+            ];
+            
+            // Add distractors with clear references
+            const otherDefs = definitions.filter(d => d.term !== def.term);
+            const otherConcepts = getAllKeyConcepts().filter(c => c !== def.term);
+            
+            while (options.length < 4) {
+                if (otherDefs.length > 0 && Math.random() > 0.5) {
+                    const randomDef = otherDefs[Math.floor(Math.random() * otherDefs.length)];
+                    options.push({
+                        main: randomDef.term,
+                        reference: `Refers to a different definition in the document`
+                    });
+                    otherDefs.splice(otherDefs.indexOf(randomDef), 1);
+                } else if (otherConcepts.length > 0) {
+                    const randomConcept = otherConcepts[Math.floor(Math.random() * otherConcepts.length)];
+                    options.push({
+                        main: randomConcept,
+                        reference: `Refers to a key concept mentioned elsewhere`
+                    });
+                    otherConcepts.splice(otherConcepts.indexOf(randomConcept), 1);
+                } else {
+                    options.push({
+                        main: `Term ${options.length + 1}`,
+                        reference: `Not directly defined in the document`
+                    });
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === def.term);
+            
+            return {
+                id: id + 1,
+                question: `Based on the document, which term is defined as: "${def.definition}"?`,
+                options: options,
+                correct: correctIndex,
+                explanation: `The term "${def.term}" is explicitly defined as "${def.definition}" in the document.`,
+                page: def.page,
+                sourceContent: def.term + def.definition
+            };
+        }
+
+        function generateFillBlankQuestionWithReferences(id) {
+            const sentences = getAllSentences().filter(s => s.text.split(' ').length > 8);
+            if (sentences.length === 0) return null;
+            
+            const sentence = sentences[Math.floor(Math.random() * sentences.length)];
+            const words = sentence.text.split(' ');
+            const significantWords = words.filter(word => word.length > 5 && /[a-z]/i.test(word));
+            
+            if (significantWords.length === 0) return null;
+            
+            const blankWord = significantWords[Math.floor(Math.random() * significantWords.length)];
+            const blankIndex = words.indexOf(blankWord);
+            
+            const questionWords = [...words];
+            questionWords[blankIndex] = '__________';
+            const questionText = questionWords.join(' ');
+            
+            // Create referential options
+            const options = [
+                {
+                    main: blankWord,
+                    reference: `Completes the sentence exactly as written in the document`
+                }
+            ];
+            
+            const otherSignificant = significantWords.filter(w => w !== blankWord);
+            const similarWords = findSimilarWords(blankWord, getAllWords());
+            
+            while (options.length < 4) {
+                if (otherSignificant.length > 0 && Math.random() > 0.6) {
+                    const randomWord = otherSignificant[Math.floor(Math.random() * otherSignificant.length)];
+                    options.push({
+                        main: randomWord,
+                        reference: `Appears in the same context but doesn't fit grammatically`
+                    });
+                    otherSignificant.splice(otherSignificant.indexOf(randomWord), 1);
+                } else if (similarWords.length > 0) {
+                    const similarWord = similarWords[Math.floor(Math.random() * similarWords.length)];
+                    options.push({
+                        main: similarWord,
+                        reference: `Similar sounding word but different meaning`
+                    });
+                    similarWords.splice(similarWords.indexOf(similarWord), 1);
+                } else {
+                    options.push({
+                        main: `Option${options.length}`,
+                        reference: `Not contextually appropriate for this sentence`
+                    });
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === blankWord);
+            
+            return {
+                id: id + 1,
+                question: `Complete the following sentence from the document:\n"${questionText}"`,
+                options: options,
+                correct: correctIndex,
+                explanation: `The word "${blankWord}" completes the sentence exactly as it appears in the original document.`,
+                page: sentence.page,
+                sourceContent: sentence.text
+            };
+        }
+
+        function generateProcessQuestionWithReferences(processes, id) {
+            if (processes.length === 0) return null;
+            
+            const process = processes[Math.floor(Math.random() * processes.length)];
+            const questionText = `What type of information is described in the following excerpt: "${process.description.substring(0, 100)}..."?`;
+            
+            const options = [
+                {
+                    main: "A sequential procedure or series of steps",
+                    reference: "Refers to step-by-step instructions or methodology"
+                },
+                {
+                    main: "A comparative analysis between concepts",
+                    reference: "Refers to comparing different ideas or methods" 
+                },
+                {
+                    main: "A definition of key terminology",
+                    reference: "Refers to explaining what specific terms mean"
+                },
+                {
+                    main: "An example or case study",
+                    reference: "Refers to practical illustrations of concepts"
+                }
+            ];
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === "A sequential procedure or series of steps");
+            
+            return {
+                id: id + 1,
+                question: questionText,
+                options: options,
+                correct: correctIndex,
+                explanation: `This excerpt describes a sequential procedure or series of steps as outlined in the document.`,
+                page: process.page,
+                sourceContent: process.description
+            };
+        }
+
+        function generateComparisonQuestionWithReferences(comparisons, id) {
+            if (comparisons.length === 0) return null;
+            
+            const comparison = comparisons[Math.floor(Math.random() * comparisons.length)];
+            const questionText = `What is the primary purpose of this statement from the document: "${comparison.comparison.substring(0, 120)}..."?`;
+            
+            const options = [
+                {
+                    main: "To highlight differences or similarities between concepts",
+                    reference: "Refers to comparative analysis in the document"
+                },
+                {
+                    main: "To define a specific term or concept",
+                    reference: "Refers to explanatory definitions provided"
+                },
+                {
+                    main: "To describe a step-by-step process", 
+                    reference: "Refers to procedural instructions mentioned"
+                },
+                {
+                    main: "To provide an example or illustration",
+                    reference: "Refers to practical examples given"
+                }
+            ];
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === "To highlight differences or similarities between concepts");
+            
+            return {
+                id: id + 1,
+                question: questionText,
+                options: options,
+                correct: correctIndex,
+                explanation: `This statement serves to compare or contrast different concepts, highlighting their differences or similarities.`,
+                page: comparison.page,
+                sourceContent: comparison.comparison
+            };
+        }
+
+        function generateConceptQuestionWithReferences(keyConcepts, id) {
+            if (keyConcepts.length === 0) return null;
+            
+            const concept = keyConcepts[Math.floor(Math.random() * keyConcepts.length)];
+            const questionText = `What is the central concept discussed in this sentence: "${concept.sentence}"?`;
+            
+            // Create referential options
+            const options = [
+                {
+                    main: concept.keyTerms[0],
+                    reference: `Directly referenced in the sentence context`
+                }
+            ];
+            
+            const otherConcepts = keyConcepts.filter(c => c.keyTerms[0] !== concept.keyTerms[0]);
+            const allKeyTerms = getAllKeyConcepts();
+            
+            while (options.length < 4) {
+                if (otherConcepts.length > 0 && Math.random() > 0.5) {
+                    const randomConcept = otherConcepts[Math.floor(Math.random() * otherConcepts.length)];
+                    options.push({
+                        main: randomConcept.keyTerms[0],
+                        reference: `Mentioned elsewhere in the document but not in this context`
+                    });
+                    otherConcepts.splice(otherConcepts.indexOf(randomConcept), 1);
+                } else if (allKeyTerms.length > 0) {
+                    const randomTerm = allKeyTerms[Math.floor(Math.random() * allKeyTerms.length)];
+                    if (!options.some(opt => opt.main === randomTerm)) {
+                        options.push({
+                            main: randomTerm,
+                            reference: `Appears in the document but unrelated to this sentence`
+                        });
+                    }
+                } else {
+                    options.push({
+                        main: `Concept ${options.length + 1}`,
+                        reference: `Not specifically mentioned in the document`
+                    });
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === concept.keyTerms[0]);
+            
+            return {
+                id: id + 1,
+                question: questionText,
+                options: options,
+                correct: correctIndex,
+                explanation: `The sentence primarily discusses "${concept.keyTerms[0]}" as the central concept.`,
+                page: concept.page,
+                sourceContent: concept.sentence
+            };
+        }
+
+        function generateExampleQuestionWithReferences(examples, id) {
+            if (examples.length === 0) return null;
+            
+            const example = examples[Math.floor(Math.random() * examples.length)];
+            const questionText = `What concept is being illustrated by this example: "${example.text.substring(0, 100)}..."?`;
+            
+            // Create referential options
+            const options = [
+                {
+                    main: example.concept,
+                    reference: `Directly illustrated by this specific example`
+                }
+            ];
+            
+            const otherExamples = examples.filter(e => e.concept !== example.concept);
+            const allConcepts = getAllKeyConcepts();
+            
+            while (options.length < 4) {
+                if (otherExamples.length > 0 && Math.random() > 0.6) {
+                    const randomExample = otherExamples[Math.floor(Math.random() * otherExamples.length)];
+                    options.push({
+                        main: randomExample.concept,
+                        reference: `Illustrated by a different example in the document`
+                    });
+                    otherExamples.splice(otherExamples.indexOf(randomExample), 1);
+                } else if (allConcepts.length > 0) {
+                    const randomConcept = allConcepts[Math.floor(Math.random() * allConcepts.length)];
+                    if (!options.some(opt => opt.main === randomConcept)) {
+                        options.push({
+                            main: randomConcept,
+                            reference: `Mentioned in the document but not with this example`
+                        });
+                    }
+                } else {
+                    options.push({
+                        main: `Theory ${options.length + 1}`,
+                        reference: `Not specifically illustrated in the document`
+                    });
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            const correctIndex = options.findIndex(opt => opt.main === example.concept);
+            
+            return {
+                id: id + 1,
+                question: questionText,
+                options: options,
+                correct: correctIndex,
+                explanation: `This example specifically illustrates the concept of "${example.concept}" as described in the document.`,
+                page: example.page,
+                sourceContent: example.text
+            };
+        }
+
+        // Helper functions for content analysis
+        function extractKeyConcepts() {
+            const concepts = [];
+            const sentences = getAllSentences();
+            
+            sentences.forEach((sentence, index) => {
+                const words = sentence.text.toLowerCase().split(/\s+/);
+                const significantWords = words.filter(word => 
+                    word.length > 5 && 
+                    !['which', 'there', 'their', 'about', 'would', 'could', 'should'].includes(word)
+                );
+                
+                if (significantWords.length >= 2) {
+                    concepts.push({
+                        sentence: sentence.text,
+                        page: sentence.page,
+                        keyTerms: significantWords.slice(0, 3)
+                    });
+                }
+            });
+            
+            return concepts;
+        }
+
+        function extractDefinitions() {
+            const definitions = [];
+            const sentences = getAllSentences();
+            
+            sentences.forEach(sentence => {
+                const text = sentence.text.toLowerCase();
+                if (text.includes('is defined as') || text.includes('refers to') || 
+                    text.includes('means that') || text.includes('can be described as') ||
+                    (text.includes('is') && text.split(' ').length < 15)) {
+                    
+                    const parts = sentence.text.split(/is|refers to|means that|can be described as/i);
+                    if (parts.length >= 2) {
+                        definitions.push({
+                            term: parts[0].trim(),
+                            definition: parts[1].trim().replace(/[.,;]$/, ''),
+                            page: sentence.page
+                        });
+                    }
+                }
+            });
+            
+            return definitions;
+        }
+
+        function extractProcesses() {
+            const processes = [];
+            const sentences = getAllSentences();
+            
+            sentences.forEach(sentence => {
+                const text = sentence.text.toLowerCase();
+                if (text.includes('first') || text.includes('then') || text.includes('next') || 
+                    text.includes('finally') || text.includes('step') || text.includes('process')) {
+                    processes.push({
+                        description: sentence.text,
+                        page: sentence.page
+                    });
+                }
+            });
+            
+            return processes;
+        }
+
+        function extractComparisons() {
+            const comparisons = [];
+            const sentences = getAllSentences();
+            
+            sentences.forEach(sentence => {
+                const text = sentence.text.toLowerCase();
+                if (text.includes('however') || text.includes('while') || text.includes('whereas') ||
+                    text.includes('compared to') || text.includes('different from') || 
+                    text.includes('similar to')) {
+                    comparisons.push({
+                        comparison: sentence.text,
+                        page: sentence.page
+                    });
+                }
+            });
+            
+            return comparisons;
+        }
+
+        function extractExamples() {
+            const examples = [];
+            const sentences = getAllSentences();
+            
+            sentences.forEach(sentence => {
+                const text = sentence.text.toLowerCase();
+                if (text.includes('for example') || text.includes('for instance') || 
+                    text.includes('such as') || text.includes('including')) {
+                    
+                    // Extract the main concept being exemplified
+                    const conceptMatch = sentence.text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+                    if (conceptMatch) {
+                        examples.push({
+                            text: sentence.text,
+                            concept: conceptMatch[1],
+                            page: sentence.page
+                        });
+                    }
+                }
+            });
+            
+            return examples;
+        }
+
+        function getAllSentences() {
+            const sentences = [];
+            state.extractedContent.forEach(content => {
+                const contentSentences = content.text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+                contentSentences.forEach(sentence => {
+                    sentences.push({
+                        text: sentence.trim(),
+                        page: content.page
+                    });
+                });
+            });
+            return sentences;
+        }
+
+        function getAllKeyConcepts() {
+            const concepts = new Set();
+            state.extractedContent.forEach(content => {
+                const words = content.text.toLowerCase().match(/\b[a-z]{6,}\b/g) || [];
+                words.forEach(word => {
+                    if (!['however', 'because', 'although', 'through', 'between'].includes(word)) {
+                        concepts.add(word.charAt(0).toUpperCase() + word.slice(1));
+                    }
+                });
+            });
+            return Array.from(concepts);
+        }
+
+        function getAllWords() {
+            const words = [];
+            state.extractedContent.forEach(content => {
+                const contentWords = content.text.toLowerCase().match(/\b[a-z]+\b/g) || [];
+                words.push(...contentWords);
+            });
+            return words;
+        }
+
+        function findSimilarWords(target, wordList) {
+            const similar = [];
+            wordList.forEach(word => {
+                if (word !== target && word.length >= 4) {
+                    // Simple similarity check (shared letters)
+                    const sharedLetters = new Set([...target].filter(letter => word.includes(letter)));
+                    if (sharedLetters.size >= Math.min(target.length, word.length) - 2) {
+                        similar.push(word);
+                    }
+                }
+            });
+            return similar.slice(0, 5);
+        }
+
+        function getQuestionTypesForDifficulty() {
+            const baseTypes = ['definition', 'fillBlank', 'concept'];
+            
+            switch (state.quizSettings.difficulty) {
+                case 'easy':
+                    return ['definition', 'fillBlank', 'concept'];
+                case 'medium':
+                    return ['definition', 'fillBlank', 'concept', 'process', 'example'];
+                case 'advanced':
+                    return ['definition', 'concept', 'process', 'comparison', 'example', 'fillBlank'];
+                default:
+                    return baseTypes;
+            }
+        }
+
+        function displayQuiz() {
+            currentQuestionSpan.textContent = '1';
+            totalQuestionsSpan.textContent = state.quiz.questions.length;
+            
+            questionsList.innerHTML = '';
+            
+            state.quiz.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const optionsHTML = q.options.map((option, optIndex) => `
+                    <div class="option" data-question="${index}" data-option="${optIndex}">
+                        <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+                        <div class="option-content">
+                            <div class="option-main">${option.main}</div>
+                            <div class="option-reference">${option.reference}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="options">${optionsHTML}</div>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    const optionIndex = parseInt(this.getAttribute('data-option'));
+                    
+                    this.parentElement.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    this.classList.add('selected');
+                    state.quiz.userAnswers[questionIndex] = optionIndex;
+                    currentQuestionSpan.textContent = (questionIndex + 1).toString();
+                });
+            });
+            
+            quizContainer.classList.add('active');
+            quizSettings.classList.remove('active');
+            contentPreview.classList.remove('active');
+        }
+
+        function submitQuiz() {
+            const unanswered = state.quiz.userAnswers.some(answer => answer === -1);
+            if (unanswered) {
+                if (!confirm('You have not answered all questions. Submit anyway?')) {
+                    return;
+                }
+            }
+            
+            let score = 0;
+            state.quiz.questions.forEach((q, index) => {
+                if (state.quiz.userAnswers[index] === q.correct) {
+                    score++;
+                }
+            });
+            
+            showResults(score);
+        }
+
+        function showResults(score) {
+            const totalQuestions = state.quiz.questions.length;
+            const percentage = (score / totalQuestions) * 100;
+            
+            scoreDisplay.textContent = `${score}/${totalQuestions}`;
+            
+            if (percentage >= 80) {
+                scoreText.textContent = 'Excellent! You have mastered the document content.';
+            } else if (percentage >= 60) {
+                scoreText.textContent = 'Good job! You understand most key concepts.';
+            } else {
+                scoreText.textContent = 'Review the document to improve your understanding.';
+            }
+            
+            let feedback = '';
+            if (percentage >= 80) {
+                feedback = 'You have demonstrated comprehensive understanding of the document material. Consider exploring advanced applications of these concepts.';
+            } else if (percentage >= 60) {
+                feedback = 'You have a solid grasp of the main concepts. Focus on the specific areas where you made errors to strengthen your knowledge.';
+            } else {
+                feedback = 'You may need to study the document more thoroughly. Pay special attention to the key definitions and concepts mentioned.';
+            }
+            
+            feedbackText.textContent = feedback;
+            
+            // Enhanced answer review with page references
+            correctAnswers.innerHTML = '<h4>Detailed Answer Review:</h4>';
+            state.quiz.questions.forEach((q, index) => {
+                const userAnswer = state.quiz.userAnswers[index];
+                const isCorrect = userAnswer === q.correct;
+                const userOption = userAnswer !== -1 ? q.options[userAnswer] : null;
+                const correctOption = q.options[q.correct];
+                
+                correctAnswers.innerHTML += `
+                    <div class="answer-review ${isCorrect ? 'correct' : ''}">
+                        <p><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                        <p><strong>Your answer:</strong> ${userOption ? userOption.main : 'Not answered'} ${isCorrect ? '✓' : '✗'}</p>
+                        <p><strong>Your reasoning:</strong> ${userOption ? userOption.reference : 'No answer provided'}</p>
+                        <p><strong>Correct answer:</strong> ${correctOption.main}</p>
+                        <p><strong>Correct reasoning:</strong> ${correctOption.reference}</p>
+                        <p><strong>Explanation:</strong> ${q.explanation} 
+                            <span class="page-reference">Page ${q.page}</span>
+                        </p>
+                        <p><strong>Study Tip:</strong> Review page ${q.page} of your document for more context on this topic.</p>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.classList.add('active');
+            quizContainer.classList.remove('active');
+        }
+
+        function restartQuiz() {
+            state.quiz.questions = [];
+            state.quiz.userAnswers = [];
+            
+            resultsContainer.classList.remove('active');
+            fileInfo.classList.remove('active');
+            contentPreview.classList.remove('active');
+            uploadArea.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Habit Builder - Class 11/12</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Smart Study Habit Builder</h1>
+      <p>Get personalized study routines based on your performance</p>
+    </header>
+
+    <section class="input-section">
+      <h2>Enter Your Academic Details</h2>
+
+      <div class="subject-input">
+        <div class="input-group">
+          <label for="subjectSelect">Select Subject:</label>
+          <select id="subjectSelect">
+            <option value="">Choose a subject</option>
+          </select>
+        </div>
+        <button id="addSubjectBtn">➕ Add</button>
+      </div>
+
+      <div id="subjectsContainer"></div>
+
+      <div class="analyze-button-container">
+        <button id="analyzeBtn">📊 Generate Study Plan</button>
+      </div>
+    </section>
+
+    <section class="analysis-section" id="analysisSection" style="display: none;">
+      <h2>Your Personalized Analysis</h2>
+      <div id="improvementAreas"></div>
+    </section>
+
+    <section class="habits-section" id="habitsSection" style="display: none;">
+      <h2>Your Study Habit Plan</h2>
+      <div id="habitsOutput"></div>
+      <button id="downloadBtn">⬇️ Download PDF Plan</button>
+    </section>
+  </div>
+</body>
+</html>

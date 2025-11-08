@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Exam Study Scheduler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #DC143C;    /* Crimson */
+            --secondary: #F75270;  /* Light Crimson */
+            --accent: #F7CAC9;     /* Pale Pink */
+            --highlight: #FDEBD0;  /* Cream */
+            --light: #f8f9fa;
+            --dark: #333333;
+            --weak: #DC143C;
+            --medium: #F75270;
+            --strong: #F7CAC9;
+            --completed: #27ae60;
+            --urgent: #DC143C;
+            --critical: #B22222;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FDEBD0 0%, #F7CAC9 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.15);
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .app-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 15px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .step {
+            padding: 15px 25px;
+            background: white;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .step.completed {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.15);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .card-title i {
+            font-size: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.2);
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+        }
+
+        .btn-success:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .btn-warning {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .btn-warning:hover {
+            background: var(--highlight);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5ee;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(247, 202, 201, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .next-step-btn {
+            margin-top: 30px;
+        }
+
+        .timetable-entry {
+            margin-bottom: 30px;
+        }
+
+        .entry-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+
+        .delete-btn {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            height: fit-content;
+        }
+
+        .delete-btn:hover {
+            background: var(--highlight);
+            transform: scale(1.05);
+        }
+
+        .add-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(247, 82, 112, 0.3);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .add-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .subject-inputs {
+            margin-top: 30px;
+        }
+
+        .subject-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .subject-row input {
+            flex: 1;
+        }
+
+        .subject-row select {
+            width: 150px;
+        }
+
+        .analysis-result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .analysis-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .weak-subjects, .medium-subjects, .strong-subjects {
+            margin-bottom: 20px;
+        }
+
+        .subject-tag {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tag-weak {
+            background: rgba(220, 20, 60, 0.15);
+            color: var(--weak);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+        }
+
+        .tag-medium {
+            background: rgba(247, 82, 112, 0.15);
+            color: var(--medium);
+            border: 1px solid rgba(247, 82, 112, 0.3);
+        }
+
+        .tag-strong {
+            background: rgba(247, 202, 201, 0.15);
+            color: var(--strong);
+            border: 1px solid rgba(247, 202, 201, 0.3);
+        }
+
+        .schedule-container {
+            margin-top: 30px;
+        }
+
+        .schedule-day {
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(220, 20, 60, 0.1);
+        }
+
+        .day-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schedule-items {
+            background: white;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-item.completed {
+            background: rgba(39, 174, 96, 0.08);
+        }
+
+        .schedule-item.urgent {
+            background: rgba(220, 20, 60, 0.05);
+            border-left: 5px solid var(--urgent);
+        }
+
+        .schedule-item.critical {
+            background: rgba(178, 34, 34, 0.05);
+            border-left: 5px solid var(--critical);
+        }
+
+        .time {
+            font-weight: 700;
+            color: var(--primary);
+            width: 140px;
+            font-size: 1.1rem;
+        }
+
+        .priority-high {
+            color: var(--weak);
+            font-weight: 700;
+            width: 120px;
+        }
+
+        .priority-medium {
+            color: var(--medium);
+            font-weight: 700;
+            width: 120px;
+        }
+
+        .priority-low {
+            color: var(--strong);
+            font-weight: 700;
+            width: 120px;
+        }
+
+        .exam-countdown {
+            color: var(--urgent);
+            font-weight: 700;
+            font-size: 1rem;
+            width: 120px;
+            text-align: right;
+        }
+
+        .exam-countdown.critical {
+            color: var(--critical);
+        }
+
+        .subject-name-container {
+            flex: 1;
+            margin: 0 20px;
+            font-weight: 600;
+        }
+
+        .completion-checkbox {
+            width: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .completion-checkbox input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            accent-color: var(--completed);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+
+        .color-weak {
+            background: var(--weak);
+        }
+
+        .color-medium {
+            background: var(--medium);
+        }
+
+        .color-strong {
+            background: var(--strong);
+        }
+
+        .color-completed {
+            background: var(--completed);
+        }
+
+        .color-urgent {
+            background: var(--urgent);
+        }
+
+        .color-critical {
+            background: var(--critical);
+        }
+
+        .countdown-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+            width: 100%;
+        }
+
+        .countdown-banner h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .countdown-banner p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .countdown-banner .days-left {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+
+        .exam-priority-list {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .priority-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.1);
+        }
+
+        .priority-item.urgent {
+            border-left: 5px solid var(--urgent);
+        }
+
+        .priority-item.critical {
+            border-left: 5px solid var(--critical);
+        }
+
+        .study-summary {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .summary-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .daily-time {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .progress-stats {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .progress-stats-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .timetable-preview {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .preview-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .preview-subject {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .preview-subject:last-child {
+            border-bottom: none;
+        }
+
+        .intensive-note {
+            background: rgba(253, 235, 208, 0.5);
+            border: 2px solid var(--highlight);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .study-strategy {
+            background: rgba(247, 202, 201, 0.3);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .instructions {
+            background: rgba(220, 20, 60, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .optional-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .app-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                max-width: 300px;
+                width: 100%;
+            }
+            
+            .entry-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-item {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .time, .priority-high, .priority-medium, .priority-low, .exam-countdown {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calendar-alt"></i> Smart Exam Study Scheduler</h1>
+            <p>Plan your study schedule effectively with our intelligent system</p>
+        </header>
+
+        <div class="app-steps">
+            <div class="step active" id="step1">1. Enter Timetable</div>
+            <div class="step" id="step2">2. Performance Analysis</div>
+            <div class="step" id="step3">3. Generate Schedule</div>
+        </div>
+
+        <div class="app-container">
+            <!-- Step 1: Manual Timetable Entry -->
+            <div class="card step-content active" id="step1-content">
+                <h2 class="card-title"><i class="fas fa-edit"></i> Step 1: Enter Your Exam Timetable</h2>
+                
+                <div class="instructions">
+                    <p>Add all your exam subjects and dates below. You can add as many subjects as needed.</p>
+                    <p class="optional-note">Day and time fields are optional - use them if you know your exam schedule details.</p>
+                </div>
+                
+                <div class="timetable-entry">
+                    <div id="entryContainer">
+                        <!-- Entry rows will be added here -->
+                    </div>
+                    
+                    <button id="addEntryBtn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Another Subject
+                    </button>
+                </div>
+                
+                <div id="timetablePreview" class="timetable-preview hidden">
+                    <div class="preview-title">Your Exam Timetable:</div>
+                    <div id="previewSubjectsList"></div>
+                </div>
+                
+                <button id="proceedToAnalysis" class="btn btn-success btn-block next-step-btn">
+                    <i class="fas fa-arrow-right"></i> Proceed to Performance Analysis
+                </button>
+            </div>
+
+            <!-- Step 2: Performance Analysis -->
+            <div class="card step-content" id="step2-content">
+                <h2 class="card-title"><i class="fas fa-chart-bar"></i> Step 2: Performance Analysis</h2>
+                
+                <div class="instructions">
+                    <p>Enter your performance in each subject to generate a personalized study plan.</p>
+                </div>
+                
+                <div class="subject-inputs" id="subjectInputs">
+                    <!-- Subject inputs will be generated here -->
+                </div>
+                
+                <div class="form-group">
+                    <label for="dailyStudyHours">Daily Available Study Hours</label>
+                    <input type="number" id="dailyStudyHours" min="1" max="24" value="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="studyDays">Maximum Study Days Before Each Exam</label>
+                    <select id="studyDaysBeforeExam">
+                        <option value="5">5 days (Balanced)</option>
+                        <option value="7" selected>7 days (Comprehensive)</option>
+                        <option value="10">10 days (Extended)</option>
+                    </select>
+                </div>
+                
+                <button id="analyzeBtn" class="btn btn-block">Analyze Performance</button>
+                
+                <div id="analysisResult" class="analysis-result hidden">
+                    <div class="analysis-title">Performance Analysis:</div>
+                    <div class="weak-subjects">
+                        <strong>Weak Subjects:</strong> 
+                        <span id="weakSubjectsList"></span>
+                    </div>
+                    <div class="medium-subjects">
+                        <strong>Medium Subjects:</strong> 
+                        <span id="mediumSubjectsList"></span>
+                    </div>
+                    <div class="strong-subjects">
+                        <strong>Strong Subjects:</strong> 
+                        <span id="strongSubjectsList"></span>
+                    </div>
+                    
+                    <button id="proceedToSchedule" class="btn btn-success btn-block next-step-btn">
+                        <i class="fas fa-arrow-right"></i> Generate Smart Study Schedule
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Schedule Generation -->
+            <div class="card step-content" id="step3-content">
+                <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Step 3: Smart Study Schedule</h2>
+                
+                <div class="schedule-container" id="scheduleContainer">
+                    <div id="countdownBanner" class="countdown-banner hidden">
+                        <!-- Countdown banner will be inserted here -->
+                    </div>
+                    
+                    <div class="study-strategy">
+                        <i class="fas fa-brain"></i>
+                        <strong>Smart Study Strategy:</strong> Study time decreases as exams approach, focusing on 4 key subjects daily with optimal time distribution.
+                    </div>
+                    
+                    <div class="exam-priority-list hidden" id="examPriorityList">
+                        <h3>Exam Priority Order</h3>
+                        <div id="prioritySubjects"></div>
+                    </div>
+                    
+                    <h3 class="card-title"><i class="fas fa-clock"></i> Your Adaptive Study Schedule</h3>
+                    
+                    <div class="study-summary">
+                        <div class="summary-title">Study Strategy</div>
+                        <div class="daily-time">Daily Study Time: <span id="totalStudyTime">6</span> hours</div>
+                        <div class="daily-time">Maximum Study Days Before Exam: <span id="studyDaysBefore">7</span> days</div>
+                        <div class="daily-time">Daily Subjects: <strong>4 key subjects</strong> with decreasing study time as exams approach</div>
+                    </div>
+
+                    <div class="progress-stats">
+                        <div class="progress-stats-title">Study Progress</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="completedSessions">0</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalSessions">0</div>
+                                <div class="stat-label">Total Sessions</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="completionRate">0%</div>
+                                <div class="stat-label">Completion Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="scheduleDays">
+                        <!-- Schedule will be generated here -->
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box color-critical"></div>
+                            <span>Critical (Exam Tomorrow)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-urgent"></div>
+                            <span>Urgent (Exam in 2-3 days)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-weak"></div>
+                            <span>High Priority (Weak Subject)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-completed"></div>
+                            <span>Completed Session</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const entryContainer = document.getElementById('entryContainer');
+        const addEntryBtn = document.getElementById('addEntryBtn');
+        const timetablePreview = document.getElementById('timetablePreview');
+        const previewSubjectsList = document.getElementById('previewSubjectsList');
+        const proceedToAnalysis = document.getElementById('proceedToAnalysis');
+        const subjectInputs = document.getElementById('subjectInputs');
+        const dailyStudyHours = document.getElementById('dailyStudyHours');
+        const studyDaysBeforeExam = document.getElementById('studyDaysBeforeExam');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const analysisResult = document.getElementById('analysisResult');
+        const weakSubjectsList = document.getElementById('weakSubjectsList');
+        const mediumSubjectsList = document.getElementById('mediumSubjectsList');
+        const strongSubjectsList = document.getElementById('strongSubjectsList');
+        const proceedToSchedule = document.getElementById('proceedToSchedule');
+        const scheduleContainer = document.getElementById('scheduleContainer');
+        const scheduleDays = document.getElementById('scheduleDays');
+        const countdownBanner = document.getElementById('countdownBanner');
+        const examPriorityList = document.getElementById('examPriorityList');
+        const prioritySubjects = document.getElementById('prioritySubjects');
+        const totalStudyTime = document.getElementById('totalStudyTime');
+        const studyDaysBefore = document.getElementById('studyDaysBefore');
+        const completedSessions = document.getElementById('completedSessions');
+        const totalSessions = document.getElementById('totalSessions');
+        const completionRate = document.getElementById('completionRate');
+
+        // Store data
+        let examTimetable = [];
+        let examDates = {};
+        let analyzedSubjects = [];
+        let allSubjects = [];
+        let dailyHours = 6;
+        let completionData = {};
+        let entryCounter = 0;
+        let maxStudyDaysBeforeExam = 7;
+
+        // Navigate to step
+        function goToStep(stepNumber) {
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            
+            document.getElementById(`step${stepNumber}-content`).classList.add('active');
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            
+            for (let i = 1; i < stepNumber; i++) {
+                document.getElementById(`step${i}`).classList.add('completed');
+            }
+        }
+
+        // Create a new entry row
+        function createEntryRow() {
+            const entryId = `entry-${entryCounter++}`;
+            const entryRow = document.createElement('div');
+            entryRow.className = 'entry-row';
+            entryRow.id = entryId;
+            
+            entryRow.innerHTML = `
+                <div class="form-group">
+                    <label for="subject-${entryId}">Subject Name</label>
+                    <input type="text" id="subject-${entryId}" class="subject-name" placeholder="e.g., Mathematics" required>
+                </div>
+                <div class="form-group">
+                    <label for="date-${entryId}">Exam Date</label>
+                    <input type="date" id="date-${entryId}" class="exam-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="day-${entryId}">Day of Week <span class="optional-note">(Optional)</span></label>
+                    <select id="day-${entryId}" class="exam-day">
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="time-${entryId}">Time <span class="optional-note">(Optional)</span></label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="time" id="time-${entryId}" class="exam-time" style="flex: 1;">
+                        <select id="ampm-${entryId}" class="exam-ampm" style="width: 80px;">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="delete-btn" data-entry="${entryId}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            entryContainer.appendChild(entryRow);
+            
+            // Add event listener to delete button
+            entryRow.querySelector('.delete-btn').addEventListener('click', function() {
+                const entryToRemove = this.getAttribute('data-entry');
+                document.getElementById(entryToRemove).remove();
+                updateTimetablePreview();
+            });
+            
+            // Add event listeners to inputs to update preview
+            entryRow.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', updateTimetablePreview);
+                input.addEventListener('change', updateTimetablePreview);
+            });
+            
+            return entryRow;
+        }
+
+        // Update the timetable preview
+        function updateTimetablePreview() {
+            const entries = document.querySelectorAll('.entry-row');
+            const subjects = [];
+            
+            entries.forEach(entry => {
+                const subjectInput = entry.querySelector('.subject-name');
+                const dateInput = entry.querySelector('.exam-date');
+                const dayInput = entry.querySelector('.exam-day');
+                const timeInput = entry.querySelector('.exam-time');
+                const ampmInput = entry.querySelector('.exam-ampm');
+                
+                if (subjectInput.value && dateInput.value) {
+                    const date = new Date(dateInput.value);
+                    const formattedDate = date.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    let timeInfo = '';
+                    if (timeInput.value) {
+                        // Format time properly
+                        let [hours, minutes] = timeInput.value.split(':');
+                        hours = parseInt(hours);
+                        
+                        // Convert to 12-hour format
+                        let period = ampmInput.value;
+                        if (period === 'PM' && hours < 12) hours += 12;
+                        if (period === 'AM' && hours === 12) hours = 0;
+                        
+                        const displayHours = hours % 12 || 12;
+                        timeInfo = ` at ${displayHours}:${minutes} ${period}`;
+                    }
+                    
+                    let dayInfo = '';
+                    if (dayInput.value) {
+                        dayInfo = ` (${dayInput.value})`;
+                    }
+                    
+                    subjects.push({
+                        subject: subjectInput.value,
+                        date: formattedDate,
+                        rawDate: dateInput.value,
+                        day: dayInput.value,
+                        time: timeInput.value,
+                        ampm: ampmInput.value,
+                        displayInfo: `${subjectInput.value} - ${formattedDate}${dayInfo}${timeInfo}`
+                    });
+                }
+            });
+            
+            if (subjects.length > 0) {
+                previewSubjectsList.innerHTML = '';
+                
+                subjects.forEach(item => {
+                    const subjectDiv = document.createElement('div');
+                    subjectDiv.className = 'preview-subject';
+                    
+                    const subjectName = document.createElement('span');
+                    subjectName.textContent = item.subject;
+                    subjectName.style.fontWeight = '600';
+                    
+                    const examDetails = document.createElement('span');
+                    examDetails.textContent = item.displayInfo;
+                    examDetails.style.color = '#666';
+                    
+                    subjectDiv.appendChild(subjectName);
+                    subjectDiv.appendChild(examDetails);
+                    previewSubjectsList.appendChild(subjectDiv);
+                });
+                
+                timetablePreview.classList.remove('hidden');
+            } else {
+                timetablePreview.classList.add('hidden');
+            }
+        }
+
+        // Collect timetable data from entries
+        function collectTimetableData() {
+            examTimetable = [];
+            examDates = {};
+            
+            const entries = document.querySelectorAll('.entry-row');
+            
+            entries.forEach(entry => {
+                const subjectInput = entry.querySelector('.subject-name');
+                const dateInput = entry.querySelector('.exam-date');
+                const dayInput = entry.querySelector('.exam-day');
+                const timeInput = entry.querySelector('.exam-time');
+                const ampmInput = entry.querySelector('.exam-ampm');
+                
+                if (subjectInput.value && dateInput.value) {
+                    const subject = subjectInput.value;
+                    const date = dateInput.value;
+                    const day = dayInput.value;
+                    const time = timeInput.value;
+                    const ampm = ampmInput.value;
+                    
+                    examTimetable.push({
+                        subject: subject,
+                        date: date,
+                        day: day,
+                        time: time,
+                        ampm: ampm
+                    });
+                    
+                    examDates[subject] = date;
+                }
+            });
+            
+            return examTimetable.length > 0;
+        }
+
+        // Initialize subject inputs with timetable data
+        function initializeSubjectInputs() {
+            subjectInputs.innerHTML = '';
+            
+            examTimetable.forEach(item => {
+                const subjectRow = document.createElement('div');
+                subjectRow.className = 'subject-row';
+                
+                const subjectInput = document.createElement('input');
+                subjectInput.type = 'text';
+                subjectInput.value = item.subject;
+                subjectInput.readOnly = true;
+                subjectInput.className = 'subject-name-input';
+                
+                const scoreInput = document.createElement('input');
+                scoreInput.type = 'number';
+                scoreInput.min = '0';
+                scoreInput.max = '100';
+                scoreInput.placeholder = 'Score (0-100)';
+                scoreInput.className = 'score-input';
+                
+                const maxScoreSelect = document.createElement('select');
+                maxScoreSelect.className = 'max-score-select';
+                maxScoreSelect.innerHTML = `
+                    <option value="25">Out of 25</option>
+                    <option value="50">Out of 50</option>
+                    <option value="80">Out of 80</option>
+                    <option value="100" selected>Out of 100</option>
+                    <option value="150">Out of 150</option>
+                    <option value="200">Out of 200</option>
+                `;
+                
+                subjectRow.appendChild(subjectInput);
+                subjectRow.appendChild(scoreInput);
+                subjectRow.appendChild(maxScoreSelect);
+                
+                subjectInputs.appendChild(subjectRow);
+            });
+        }
+
+        // Analyze subjects based on scores
+        function analyzeSubjects() {
+            // Get study days setting
+            maxStudyDaysBeforeExam = parseInt(studyDaysBeforeExam.value);
+            
+            const scoreInputs = document.querySelectorAll('.score-input');
+            const maxScoreSelects = document.querySelectorAll('.max-score-select');
+            const subjectInputs = document.querySelectorAll('.subject-name-input');
+            
+            analyzedSubjects = [];
+            allSubjects = [];
+            
+            for (let i = 0; i < subjectInputs.length; i++) {
+                const subject = subjectInputs[i].value;
+                const score = parseFloat(scoreInputs[i].value);
+                const maxScore = parseInt(maxScoreSelects[i].value);
+                
+                if (subject && !isNaN(score) && !isNaN(maxScore) && maxScore > 0) {
+                    // Calculate percentage
+                    const percentage = (score / maxScore) * 100;
+                    
+                    let category;
+                    if (percentage < 50) {
+                        category = 'weak';
+                    } else if (percentage >= 50 && percentage < 75) {
+                        category = 'medium';
+                    } else {
+                        category = 'strong';
+                    }
+                    
+                    analyzedSubjects.push({
+                        name: subject,
+                        score: score,
+                        maxScore: maxScore,
+                        percentage: percentage,
+                        category: category
+                    });
+                    
+                    allSubjects.push(subject);
+                }
+            }
+            
+            // Sort by percentage (ascending)
+            analyzedSubjects.sort((a, b) => a.percentage - b.percentage);
+            
+            // Get daily study hours
+            dailyHours = parseFloat(dailyStudyHours.value) || 6;
+            
+            displayAnalysisResults();
+        }
+
+        // Display analysis results
+        function displayAnalysisResults() {
+            const weakSubjects = analyzedSubjects.filter(subject => subject.category === 'weak');
+            const mediumSubjects = analyzedSubjects.filter(subject => subject.category === 'medium');
+            const strongSubjects = analyzedSubjects.filter(subject => subject.category === 'strong');
+            
+            weakSubjectsList.innerHTML = '';
+            mediumSubjectsList.innerHTML = '';
+            strongSubjectsList.innerHTML = '';
+            
+            weakSubjects.forEach(subject => {
+                const tag = document.createElement('span');
+                tag.className = 'subject-tag tag-weak';
+                tag.textContent = `${subject.name} (${subject.percentage.toFixed(1)}%)`;
+                weakSubjectsList.appendChild(tag);
+            });
+            
+            mediumSubjects.forEach(subject => {
+                const tag = document.createElement('span');
+                tag.className = 'subject-tag tag-medium';
+                tag.textContent = `${subject.name} (${subject.percentage.toFixed(1)}%)`;
+                mediumSubjectsList.appendChild(tag);
+            });
+            
+            strongSubjects.forEach(subject => {
+                const tag = document.createElement('span');
+                tag.className = 'subject-tag tag-strong';
+                tag.textContent = `${subject.name} (${subject.percentage.toFixed(1)}%)`;
+                strongSubjectsList.appendChild(tag);
+            });
+            
+            analysisResult.classList.remove('hidden');
+        }
+
+        // Calculate study time based on days until exam
+        function getStudyTimeForDay(daysUntilExam, subjectCategory) {
+            // Base time allocation based on days until exam
+            let baseTime;
+            
+            if (daysUntilExam >= 7) {
+                baseTime = 0.8; // 80% of normal time (far from exam)
+            } else if (daysUntilExam >= 4) {
+                baseTime = 1.0; // 100% of normal time (moderate priority)
+            } else if (daysUntilExam >= 2) {
+                baseTime = 1.2; // 120% of normal time (high priority)
+            } else {
+                baseTime = 1.5; // 150% of normal time (critical - exam tomorrow)
+            }
+            
+            // Adjust based on subject category
+            let categoryMultiplier;
+            switch(subjectCategory) {
+                case 'weak': categoryMultiplier = 1.3; break;
+                case 'medium': categoryMultiplier = 1.0; break;
+                case 'strong': categoryMultiplier = 0.7; break;
+                default: categoryMultiplier = 1.0;
+            }
+            
+            return baseTime * categoryMultiplier;
+        }
+
+        // Generate smart study schedule
+        function generateStudySchedule() {
+            if (analyzedSubjects.length === 0) return;
+            
+            // Update summary
+            totalStudyTime.textContent = dailyHours;
+            studyDaysBefore.textContent = maxStudyDaysBeforeExam;
+            
+            // Create countdown banner
+            createCountdownBanner();
+            
+            // Reset completion data
+            completionData = {};
+            
+            // Generate schedule days based on exam dates
+            scheduleDays.innerHTML = '';
+            
+            // Get all unique study days across all subjects
+            const allStudyDays = new Set();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            analyzedSubjects.forEach(subject => {
+                const examDate = new Date(examDates[subject.name]);
+                
+                // Add study days before each exam (decreasing frequency as exam approaches)
+                for (let i = 1; i <= maxStudyDaysBeforeExam; i++) {
+                    // Study more frequently as exam approaches
+                    if (i <= 3 || i % 2 === 0) { // Every day for last 3 days, every other day before that
+                        const studyDate = new Date(examDate);
+                        studyDate.setDate(examDate.getDate() - i);
+                        
+                        // Only include study days that are today or in the future
+                        if (studyDate >= today) {
+                            allStudyDays.add(studyDate.toISOString().split('T')[0]);
+                        }
+                    }
+                }
+            });
+            
+            // Convert to array and sort
+            const studyDaysList = Array.from(allStudyDays)
+                .sort()
+                .map(dateStr => {
+                    const date = new Date(dateStr);
+                    return {
+                        date: dateStr,
+                        dayName: date.toLocaleDateString('en-US', { weekday: 'long' }),
+                        displayDate: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    };
+                });
+            
+            // Calculate priority for each subject based on exam date and performance
+            const subjectsWithPriority = analyzedSubjects.map(subject => {
+                const examDate = new Date(examDates[subject.name]);
+                const daysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                
+                return {
+                    ...subject,
+                    daysUntilExam: daysUntilExam,
+                    examDate: examDates[subject.name]
+                };
+            });
+            
+            // Show exam priority list
+            showExamPriorityList(subjectsWithPriority);
+            
+            // Generate schedule for each study day
+            studyDaysList.forEach(day => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'schedule-day';
+                
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.innerHTML = `
+                    <span>${day.dayName}, ${day.displayDate}</span>
+                    <div class="day-progress">0/4 completed</div>
+                `;
+                
+                const scheduleItems = document.createElement('div');
+                scheduleItems.className = 'schedule-items';
+                
+                // Select 4 key subjects for today based on smart algorithm
+                const todaySubjects = selectSubjectsForDay(subjectsWithPriority, day.date);
+                
+                // Generate study slots for today's subjects with decreasing time
+                const timeSlots = generateDailySchedule(todaySubjects, day.date);
+                
+                timeSlots.forEach((slot, slotIndex) => {
+                    const sessionId = `${day.date}-${slotIndex}`;
+                    completionData[sessionId] = false;
+                    
+                    const scheduleItem = document.createElement('div');
+                    scheduleItem.className = 'schedule-item';
+                    if (slot.subject.daysUntilExam <= 1) {
+                        scheduleItem.classList.add('critical');
+                    } else if (slot.subject.daysUntilExam <= 3) {
+                        scheduleItem.classList.add('urgent');
+                    }
+                    scheduleItem.dataset.sessionId = sessionId;
+                    
+                    const timeSpan = document.createElement('span');
+                    timeSpan.className = 'time';
+                    timeSpan.textContent = slot.time;
+                    
+                    const subjectSpan = document.createElement('span');
+                    subjectSpan.className = 'subject-name-container';
+                    subjectSpan.textContent = slot.subject.name;
+                    
+                    const prioritySpan = document.createElement('span');
+                    prioritySpan.className = `priority-${slot.subject.category}`;
+                    prioritySpan.textContent = slot.subject.category.charAt(0).toUpperCase() + slot.subject.category.slice(1);
+                    
+                    const countdownSpan = document.createElement('span');
+                    countdownSpan.className = 'exam-countdown';
+                    if (slot.subject.daysUntilExam <= 1) {
+                        countdownSpan.classList.add('critical');
+                        countdownSpan.textContent = 'TOMORROW';
+                    } else if (slot.subject.daysUntilExam <= 3) {
+                        countdownSpan.textContent = `${slot.subject.daysUntilExam} DAYS`;
+                    } else {
+                        countdownSpan.textContent = `${slot.subject.daysUntilExam} DAYS`;
+                    }
+                    
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'completion-checkbox';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `session-${sessionId}`;
+                    checkbox.addEventListener('change', function() {
+                        updateCompletionStatus(sessionId, this.checked, dayHeader, todaySubjects.length);
+                    });
+                    
+                    checkboxContainer.appendChild(checkbox);
+                    
+                    scheduleItem.appendChild(timeSpan);
+                    scheduleItem.appendChild(subjectSpan);
+                    scheduleItem.appendChild(prioritySpan);
+                    scheduleItem.appendChild(countdownSpan);
+                    scheduleItem.appendChild(checkboxContainer);
+                    
+                    scheduleItems.appendChild(scheduleItem);
+                });
+                
+                dayDiv.appendChild(dayHeader);
+                dayDiv.appendChild(scheduleItems);
+                scheduleDays.appendChild(dayDiv);
+            });
+            
+            // Update progress stats
+            updateProgressStats();
+            
+            scheduleContainer.classList.remove('hidden');
+        }
+
+        // Select 4 key subjects for a specific day using smart algorithm
+        function selectSubjectsForDay(allSubjects, date) {
+            const today = new Date(date);
+            const availableSubjects = [];
+            
+            allSubjects.forEach(subject => {
+                const examDate = new Date(subject.examDate);
+                const daysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                
+                // Only include subjects that need study on this day
+                if (daysUntilExam > 0 && daysUntilExam <= maxStudyDaysBeforeExam) {
+                    // Calculate priority score (lower = higher priority)
+                    let priorityScore = daysUntilExam;
+                    
+                    // Adjust based on subject strength (weaker subjects get higher priority)
+                    if (subject.category === 'weak') priorityScore -= 10;
+                    else if (subject.category === 'medium') priorityScore -= 5;
+                    
+                    availableSubjects.push({
+                        ...subject,
+                        priorityScore: priorityScore
+                    });
+                }
+            });
+            
+            // Sort by priority (lowest score first) and take top 4
+            return availableSubjects
+                .sort((a, b) => a.priorityScore - b.priorityScore)
+                .slice(0, 4);
+        }
+
+        // Generate daily schedule with decreasing study time
+        function generateDailySchedule(daySubjects, date) {
+            const timeSlots = [];
+            let currentTime = 8 * 60; // Start at 8:00 AM in minutes
+            
+            // Helper function to format time
+            const formatTime = (minutes) => {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const displayHours = hours > 12 ? hours - 12 : hours;
+                return `${displayHours}:${mins.toString().padStart(2, '0')} ${period}`;
+            };
+            
+            // Calculate total available time for the day
+            const totalAvailableMinutes = dailyHours * 60;
+            let totalRequiredMinutes = 0;
+            
+            // First pass: calculate required time for each subject
+            const subjectTimes = daySubjects.map(subject => {
+                const today = new Date(date);
+                const examDate = new Date(subject.examDate);
+                const daysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                
+                const timeMultiplier = getStudyTimeForDay(daysUntilExam, subject.category);
+                const subjectMinutes = Math.floor((totalAvailableMinutes / 4) * timeMultiplier);
+                totalRequiredMinutes += subjectMinutes;
+                
+                return {
+                    subject: subject,
+                    minutes: subjectMinutes
+                };
+            });
+            
+            // Adjust times if they exceed available time
+            if (totalRequiredMinutes > totalAvailableMinutes) {
+                const adjustmentFactor = totalAvailableMinutes / totalRequiredMinutes;
+                subjectTimes.forEach(item => {
+                    item.minutes = Math.floor(item.minutes * adjustmentFactor);
+                });
+            }
+            
+            // Create time slots with breaks
+            subjectTimes.forEach((item, index) => {
+                const endTime = currentTime + item.minutes;
+                
+                timeSlots.push({
+                    time: `${formatTime(currentTime)} - ${formatTime(endTime)}`,
+                    subject: item.subject,
+                    duration: item.minutes / 60
+                });
+                
+                // Add break (15 minutes between subjects, 30 minutes lunch)
+                currentTime = endTime + (index === 1 ? 30 : 15);
+            });
+            
+            return timeSlots;
+        }
+
+        // Create countdown banner
+        function createCountdownBanner() {
+            const today = new Date();
+            const examDatesArray = Object.values(examDates).map(date => new Date(date));
+            const firstExamDate = new Date(Math.min(...examDatesArray));
+            const daysUntilFirstExam = Math.ceil((firstExamDate - today) / (1000 * 60 * 60 * 24));
+            
+            countdownBanner.innerHTML = `
+                <h3><i class="fas fa-hourglass-half"></i> Smart Study Countdown</h3>
+                <p>First exam in:</p>
+                <div class="days-left">${daysUntilFirstExam} DAYS</div>
+                <p>Adaptive schedule: Study time decreases as exams approach</p>
+            `;
+            countdownBanner.classList.remove('hidden');
+        }
+
+        // Show exam priority list
+        function showExamPriorityList(subjects) {
+            examPriorityList.classList.remove('hidden');
+            prioritySubjects.innerHTML = '';
+            
+            subjects.forEach(subject => {
+                const priorityItem = document.createElement('div');
+                priorityItem.className = 'priority-item';
+                if (subject.daysUntilExam <= 1) {
+                    priorityItem.classList.add('critical');
+                } else if (subject.daysUntilExam <= 3) {
+                    priorityItem.classList.add('urgent');
+                }
+                
+                priorityItem.innerHTML = `
+                    <span class="subject-name">${subject.name}</span>
+                    <span class="exam-countdown">${subject.daysUntilExam} days</span>
+                    <span class="priority-${subject.category}">${subject.category.toUpperCase()}</span>
+                `;
+                
+                prioritySubjects.appendChild(priorityItem);
+            });
+        }
+
+        // Update completion status for a session
+        function updateCompletionStatus(sessionId, completed, dayHeader, totalSessions) {
+            completionData[sessionId] = completed;
+            
+            // Update session item appearance
+            const sessionItem = document.querySelector(`[data-session-id="${sessionId}"]`);
+            if (completed) {
+                sessionItem.classList.add('completed');
+            } else {
+                sessionItem.classList.remove('completed');
+            }
+            
+            // Update day progress
+            const dayDate = sessionId.split('-')[0];
+            const daySessions = Object.keys(completionData).filter(id => id.startsWith(dayDate));
+            const completedCount = daySessions.filter(id => completionData[id]).length;
+            dayHeader.querySelector('.day-progress').textContent = `${completedCount}/${totalSessions} completed`;
+            
+            // Update overall progress stats
+            updateProgressStats();
+        }
+
+        // Update overall progress statistics
+        function updateProgressStats() {
+            const total = Object.keys(completionData).length;
+            const completed = Object.values(completionData).filter(status => status).length;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            completedSessions.textContent = completed;
+            totalSessions.textContent = total;
+            completionRate.textContent = `${rate}%`;
+        }
+
+        // Initialize the app
+        function initApp() {
+            // Add first entry row
+            createEntryRow();
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('.exam-date').forEach(input => {
+                input.min = today;
+            });
+        }
+
+        // Event Listeners
+        addEntryBtn.addEventListener('click', function() {
+            const newRow = createEntryRow();
+            // Set minimum date to today for new rows
+            newRow.querySelector('.exam-date').min = new Date().toISOString().split('T')[0];
+        });
+        
+        analyzeBtn.addEventListener('click', function() {
+            analyzeSubjects();
+        });
+        
+        proceedToAnalysis.addEventListener('click', function() {
+            if (collectTimetableData()) {
+                initializeSubjectInputs();
+                goToStep(2);
+            } else {
+                alert('Please add at least one subject with a valid date.');
+            }
+        });
+        
+        proceedToSchedule.addEventListener('click', function() {
+            goToStep(3);
+            generateStudySchedule();
+        });
+
+        // Initialize the app
+        initApp();
+    </script>
+</body>
+</html>

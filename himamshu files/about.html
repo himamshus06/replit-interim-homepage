@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BUDDIQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #DC143C;
+            --secondary: #F75270;
+            --light: #F7CAC9;
+            --background: #FDEBD0;
+        }
+
+        body {
+            background-color: var(--background);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 80px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .problem-card {
+            background-color: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .problem-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .problem-card p {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            padding: 80px 0;
+            background-color: var(--background);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .chart-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Solution Section */
+        .solution-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .solution-card {
+            background: linear-gradient(135deg, var(--light), white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .solution-card .icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .solution-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 80px 0;
+            background-color: var(--background);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .benefit-item {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-item .number {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .benefit-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="logo-text">BUDDIQ</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>About BUDDIQ</h1>
+            <p>Transforming Indian Higher-Secondary Education Through Intelligent Study Management</p>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>The Challenge</h2>
+                <p>Understanding the crisis facing Indian Class 11-12 students</p>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Academic Stress Crisis</h3>
+                    <p>1 in 5 high-schoolers rarely feels calm, motivated, or excited. Nearly 75% of 12th graders report sleeping less than 6 hours, with 70% experiencing moderate to severe stress levels.</p>
+                </div>
+                <div class="problem-card">
+                    <h3><i class="fas fa-graduation-cap"></i> Exam Pressure</h3>
+                    <p>High-stakes board exams and entrance tests, combined with parental expectations, create overwhelming pressure. Students internalize the belief that "if I don't top my exam, I've failed in life."</p>
+                </div>
+                <div class="problem-card">
+                    <h3><i class="fas fa-clock"></i> Poor Time Management</h3>
+                    <p>Excessive workload, procrastination, and lack of structured planning lead to cramming, sleep loss, and increased anxiety. Many students keep tasks in their heads rather than using planners.</p>
+                </div>
+                <div class="problem-card">
+                    <h3><i class="fas fa-user-friends"></i> Lack of Guidance</h3>
+                    <p>Nearly 40% of students don't know where to get professional help at school. Schools often lack counselors or structured study guidance, leaving students to cope alone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>By The Numbers</h2>
+                <p>Data-driven insights into student challenges</p>
+            </div>
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>Student Stress Levels</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="stressChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Sleep Deprivation (12th Graders)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="sleepChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Stress by Gender</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Top Stressors</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="stressorsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Solution</h2>
+                <p>How BUDDIQ addresses these challenges</p>
+            </div>
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                    <h3>Personalized Study Plans</h3>
+                    <p>Automatically allocates study hours per subject, balanced by difficulty and upcoming tests. Our adaptive scheduling algorithm adjusts to each student's performance, ensuring no topic is overlooked.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3>Dynamic Rescheduling</h3>
+                    <p>As students complete tasks or struggle with topics, the schedule updates itself. Harder topics get more spaced repetitions over time, while easier ones require less review.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-puzzle-piece"></i></div>
+                    <h3>Chunking & Break Reminders</h3>
+                    <p>Breaks study time into 45-60 minute blocks with built-in 5-10 minute breaks, exactly as educational experts recommend to reduce fatigue and procrastination.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-fire"></i></div>
+                    <h3>Habit Creation Tools</h3>
+                    <p>Students set small daily goals and track consistency through streaks. Research shows that forming regular habits reduces cognitive load and stress over time.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-chart-bar"></i></div>
+                    <h3>Progress Analytics</h3>
+                    <p>Provides comprehensive stats on study time, completed tasks, and sleep patterns. Visualizing progress helps students feel more in control and less anxious.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="icon"><i class="fas fa-robot"></i></div>
+                    <h3>AI-Powered Assistance</h3>
+                    <p>Our intelligent chatbot provides instant answers, explanations, and study guidance, available 24/7 to support students whenever they need help.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Proven Benefits</h2>
+                <p>Research-backed outcomes from using BUDDIQ</p>
+            </div>
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>Stress Reduction Over Time</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="benefitsChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Academic Performance Improvement</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="number">30-50%</div>
+                    <h4>Reduction in Test Anxiety</h4>
+                    <p>Students report feeling significantly less anxious once following a structured plan</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="number">75%</div>
+                    <h4>Better Sleep Quality</h4>
+                    <p>Improved sleep patterns when following scheduled study routines</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="number">r=0.33</div>
+                    <h4>Time Management Correlation</h4>
+                    <p>Positive correlation with academic motivation and exam scores</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="number">2x</div>
+                    <h4>Better Retention</h4>
+                    <p>Spaced learning improves long-term retention compared to cramming</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 BUDDIQ. All rights reserved. | <a href="../index.html" style="color: var(--light);">Back to Home</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Stress Levels Chart
+        const stressCtx = document.getElementById('stressChart').getContext('2d');
+        new Chart(stressCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Moderate Stress', 'Minimal Stress', 'Severe Stress'],
+                datasets: [{
+                    data: [57, 43, 20],
+                    backgroundColor: ['#DC143C', '#F75270', '#F7CAC9'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Sleep Deprivation Chart
+        const sleepCtx = document.getElementById('sleepChart').getContext('2d');
+        new Chart(sleepCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Sleep < 6 hours', 'Adequate Sleep'],
+                datasets: [{
+                    label: 'Percentage of 12th Graders',
+                    data: [75, 25],
+                    backgroundColor: ['#DC143C', '#F7CAC9'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Gender Stress Chart
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Boys', 'Girls'],
+                datasets: [{
+                    label: 'Stress Level',
+                    data: [60, 75],
+                    backgroundColor: ['#F75270', '#DC143C'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Top Stressors Chart
+        const stressorsCtx = document.getElementById('stressorsChart').getContext('2d');
+        new Chart(stressorsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Academic Performance', 'Future Uncertainty', 'Parental Pressure', 'Workload', 'Lack of Guidance'],
+                datasets: [{
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: [
+                        '#DC143C',
+                        '#F75270',
+                        '#F7CAC9',
+                        '#FDEBD0',
+                        '#FFE4E1'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Benefits Chart
+        const benefitsCtx = document.getElementById('benefitsChart').getContext('2d');
+        new Chart(benefitsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [{
+                    label: 'Stress Level (Lower is Better)',
+                    data: [75, 68, 60, 52, 45, 38],
+                    borderColor: '#DC143C',
+                    backgroundColor: 'rgba(220, 20, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        reverse: true,
+                        title: {
+                            display: true,
+                            text: 'Stress Level'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Performance Chart
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Without BUDDIQ', 'With BUDDIQ'],
+                datasets: [{
+                    label: 'Academic Performance Score',
+                    data: [65, 85],
+                    backgroundColor: ['#F7CAC9', '#DC143C'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

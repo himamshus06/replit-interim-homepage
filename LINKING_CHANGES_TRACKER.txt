@@ -1,0 +1,94 @@
+================================================================================
+LINKING CHANGES TRACKER - index.html
+================================================================================
+Date: 2025-01-27
+Purpose: Link all HTML pages from subfolders to the main index.html page
+
+================================================================================
+PAGES LINKED:
+================================================================================
+
+1. Study Analyzer (Study Habit Builder)
+   - Location: drugjna files/analyser.html
+   - Description: Smart Study Habit Builder for Class 11/12 students
+   - Features: Personalized study routines based on performance analysis
+
+2. Quiz Generator
+   - Location: sanjana files/quiz.html
+   - Description: Advanced PDF to Quiz Generator with Referential Options
+   - Features: Convert PDFs to quizzes, generate practice questions
+
+3. Study Planner (Smart Exam Study Scheduler)
+   - Location: shiva files/studySmartPlanner.html
+   - Description: Smart Exam Study Scheduler
+   - Features: Create study schedules, track exam dates, manage study sessions
+
+4. Chatbot (EduBot)
+   - Location: himamshu files/chat.html
+   - Description: My Chatbot Landing Page - EduBot
+   - Features: Personal academic assistant chatbot interface
+
+================================================================================
+CHANGES MADE TO index.html:
+================================================================================
+
+1. NAVIGATION MENU (Lines 599-608)
+   - Added four new navigation links:
+     * "Study Analyzer" → drugjna files/analyser.html
+     * "Quiz Generator" → sanjana files/quiz.html
+     * "Study Planner" → shiva files/studySmartPlanner.html
+     * "Chatbot" → himamshu files/chat.html
+   
+   Location: <ul class="nav-links"> section in header
+
+2. FEATURES SECTION (Lines 744-771)
+   - Made feature cards clickable by adding onclick handlers:
+     * "Smart Study Plans" card → Links to shiva files/studySmartPlanner.html
+     * "Progress Tracking" card → Links to drugjna files/analyser.html
+     * "AI Tutor" card → Links to himamshu files/chat.html
+     * "Practice Tests" card → Links to sanjana files/quiz.html
+   
+   Changes:
+   - Added onclick="window.location.href='[path]'" to relevant feature cards
+   - Added style="cursor: pointer;" for better UX indication
+   
+   Location: <div class="features-grid"> section
+
+3. FOOTER SECTION (Lines 889-897)
+   - Updated "Product" column in footer with links to all four pages:
+     * "Study Planner" → shiva files/studySmartPlanner.html
+     * "Study Analyzer" → drugjna files/analyser.html
+     * "Quiz Generator" → sanjana files/quiz.html
+     * "Chatbot" → himamshu files/chat.html
+   
+   - Replaced placeholder links with actual page links
+   - Changed "Features" link to anchor (#features) for better navigation
+   
+   Location: <div class="footer-column"> with h3 "Product"
+
+================================================================================
+SUMMARY:
+================================================================================
+
+Total Links Added: 10
+- Navigation Menu: 4 links
+- Features Section: 4 clickable cards
+- Footer Section: 4 links
+
+All pages from subfolders are now accessible from the main index.html page in
+multiple locations for better user experience and discoverability.
+
+================================================================================
+NOTES:
+================================================================================
+
+- All paths use relative URLs (e.g., "drugjna files/analyser.html")
+- Feature cards maintain their original styling while being clickable
+- Navigation links follow the existing design pattern
+- Footer links are organized under the "Product" section
+- Chatbot page (chat.html) added from himamshu files folder
+
+================================================================================
+END OF TRACKER
+================================================================================
+

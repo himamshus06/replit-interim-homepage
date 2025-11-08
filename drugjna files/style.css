@@ -1,0 +1,177 @@
+/* === Minimal Modern UI with Color Hunt Palette === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background: #FDEBD0;
+  color: #333;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  background: #fff;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(220, 20, 60, 0.08);
+}
+
+/* --- Header --- */
+header { text-align: center; color: #DC143C; margin-bottom: 30px; }
+header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
+header p { color: #444; opacity: 0.8; }
+
+/* --- Card Sections --- */
+.input-section, .analysis-section, .habits-section {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #F7CAC9;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 3px 10px rgba(247, 82, 112, 0.05);
+}
+
+/* --- Subject Input Layout --- */
+.subject-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #DC143C;
+}
+
+.subject-input select,
+.subject-input input {
+  padding: 10px;
+  border: 1.5px solid #F7CAC9;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+  transition: border-color 0.3s;
+}
+
+.subject-input select:focus,
+.subject-input input:focus {
+  outline: none;
+  border-color: #F75270;
+}
+
+/* --- Buttons --- */
+button {
+  background: #F75270;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+button:hover { background: #DC143C; transform: translateY(-1px); }
+
+.remove-btn {
+  background: transparent;
+  border: 1px solid #F7CAC9;
+  color: #DC143C;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all 0.25s;
+}
+
+.remove-btn:hover { background: #FDEBD0; border-color: #F75270; }
+
+#analyzeBtn { background: #DC143C; font-size: 15px; padding: 10px 22px; border-radius: 6px; }
+#analyzeBtn:hover { background: #F75270; }
+
+#downloadBtn {
+  background: #F75270;
+  padding: 10px 22px;
+  font-size: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+#downloadBtn:hover { background: #DC143C; }
+
+/* --- Cards & Lists --- */
+.subject-card {
+  border: 1.5px solid #F7CAC9;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 18px;
+  background: white;
+  transition: box-shadow 0.3s ease;
+}
+.subject-card:hover { box-shadow: 0 6px 12px rgba(220, 20, 60, 0.08); }
+
+.subject-card h3 {
+  margin-bottom: 12px;
+  color: #DC143C;
+  border-bottom: 2px solid #F75270;
+  padding-bottom: 8px;
+}
+
+.topic-input {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #FDEBD0;
+  margin-bottom: 10px;
+}
+
+.priority-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.priority-high { background: #FFE8EC; color: #DC143C; border: 1px solid #DC143C; }
+.priority-medium { background: #FDEBD0; color: #F75270; border: 1px solid #F75270; }
+.priority-low { background: #F0F7F0; color: #27ae60; border: 1px solid #27ae60; }
+
+.habit-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px 0;
+  border-left: 4px solid #F75270;
+  box-shadow: 0 3px 8px rgba(220, 20, 60, 0.1);
+}
+
+.habit-frequency {
+  background: #DC143C;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.no-subjects, .no-topics { text-align: center; padding: 18px; color: #666; font-style: italic; }
+.analysis-card { padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #F75270; }
+
+@media (max-width: 768px) {
+  .subject-input { flex-direction: column; align-items: stretch; }
+  .container { padding: 15px; }
+  header h1 { font-size: 1.8rem; }
+  button { width: 100%; }
+}
