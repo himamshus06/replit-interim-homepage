@@ -63,19 +63,7 @@
             align-items: center;
             gap: 15px;
         }
-        
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-        }
+    
         
         .logo-text {
             font-size: 28px;
@@ -592,25 +580,26 @@
             <nav>
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <i class="fas fa-brain"></i>
+                        <img style="width: 80px;" src="Screenshot 2025-11-08 194905 (1).png" alt="">
                     </div>
                     <div class="logo-text">BUDDIQ</div>
                 </div>
                 <ul class="nav-links">
-                    
                     <li><a href="drugjna files/analyser.html" target="_blank">Study Analyzer</a></li>
                     <li><a href="sanjana files/quiz.html" target="_blank">Quiz Generator</a></li>
                     <li><a href="shiva files/studySmartPlanner.html" target="_blank">Study Planner</a></li>
-                    <li><a href="himamshu files/chat.html" target="_blank">Chatbot</a></li>
-                    <li><a href="himamshu files/about.html" target="_blank">About Us</a></li>
+                    <li><a href="himamshu files/about.html" target="_blank">About BUDDIQ</a></li>
+                    <li><a style="background-color: #DC143C; padding: 10px;border-radius: 15%;color: white;" href="himamshu files/chat.html" target="_blank">Chatbot</a></li>
+                    <li><a href="profile.html" id="profileLink" style="display: none;">My Profile</a></li>
                 </ul>
+
                 <div class="user-info" id="userInfo">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <span id="userName">User</span>
                     <button class="logout-button" id="logoutButton">Logout</button>
                 </div>
                 <button class="cta-button" id="authButton">Get Started</button>
-            </nav>
+            </nav>  
         </div>
     </header>
 
@@ -689,9 +678,6 @@
                 <p>BUDDIQ helps you study smarter, not harder. Our AI assistant creates personalized study plans, tracks your progress, and helps you master any subject with ease.</p>
                 <button class="cta-button" id="heroAuthButton">Start Learning Now</button>
             </div>
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Student studying with BUDDIQ">
-            </div>
         </div>
     </section>
 
@@ -740,28 +726,28 @@
                 <p>Discover how BUDDIQ revolutionizes your study routine with these amazing features</p>
             </div>
             <div class="features-grid">
-                <div class="feature-card" onclick="window.location.href='shiva files/studySmartPlanner.html'" style="cursor: pointer;">
+                <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
                     </div>
                     <h3>Smart Study Plans</h3>
                     <p>AI-generated study schedules tailored to your learning style, goals, and deadlines.</p>
                 </div>
-                <div class="feature-card" onclick="window.location.href='drugjna files/analyser.html'" style="cursor: pointer;">
+                <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h3>Progress Tracking</h3>
                     <p>Monitor your improvement with detailed analytics and performance insights.</p>
                 </div>
-                <div class="feature-card" onclick="window.location.href='himamshu files/chat.html'" style="cursor: pointer;">
+                <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-robot"></i>
                     </div>
                     <h3>AI Tutor</h3>
                     <p>Get instant answers to your questions and explanations for difficult concepts.</p>
                 </div>
-                <div class="feature-card" onclick="window.location.href='sanjana files/quiz.html'" style="cursor: pointer;">
+                <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-flask"></i>
                     </div>
@@ -770,17 +756,17 @@
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fa-solid fa-puzzle-piece"></i>
                     </div>
-                    <h3>Study Groups</h3>
-                    <p>Connect with peers studying the same topics for collaborative learning.</p>
+                    <h3>Difficulty Allocation</h3>
+                    <p>the process of assigning appropriate difficulty levels to tasks or problems based on their complexity and the user's skill level.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fa-regular fa-bookmark"></i>
                     </div>
-                    <h3>Mobile App</h3>
-                    <p>Study on the go with our fully-featured mobile application.</p>
+                    <h3>Study Frequency determinor</h3>
+                    <p>a tool or system that identifies how often a person studies to help optimize their learning schedule.</p>
                 </div>
             </div>
         </div>
@@ -813,7 +799,7 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
+    <!-- Testimonials Section 
     <section class="testimonials" id="testimonials">
         <div class="container">
             <div class="section-title">
@@ -859,7 +845,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section>-->
 
     <!-- CTA Section -->
     <section class="cta-section">
@@ -1310,6 +1296,7 @@
                 userInfo.style.display = 'flex';
                 authButton.style.display = 'none';
                 dashboard.classList.add('active');
+                document.getElementById('profileLink').style.display = 'block';
                 
                 // Set user name and avatar
                 const displayName = user.displayName || 'User';
@@ -1323,6 +1310,7 @@
                 userInfo.style.display = 'none';
                 authButton.style.display = 'block';
                 dashboard.classList.remove('active');
+                document.getElementById('profileLink').style.display = 'none';
             }
         }
 

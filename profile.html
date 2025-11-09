@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - BUDDIQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Color Variables */
+        :root {
+            --primary: #DC143C;
+            --secondary: #F75270;
+            --light: #F7CAC9;
+            --background: #FDEBD0;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: #333;
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logout-button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Profile Section */
+        .profile-header {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .profile-info h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .profile-info p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Exam Scores List */
+        .scores-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .score-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .score-item:last-child {
+            border-bottom: none;
+        }
+        
+        .score-info {
+            flex: 1;
+        }
+        
+        .score-info strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .score-info small {
+            color: #666;
+        }
+        
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-left: 20px;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 15px;
+            padding: 5px 10px;
+        }
+        
+        .delete-btn:hover {
+            color: #c82333;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Auth Required Message */
+        .auth-required {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .auth-required h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .auth-required p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .auth-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .auth-button:hover {
+            background-color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <img style="width: 80px;" src="Screenshot 2025-11-08 194905 (1).png" alt="">
+                    </div>
+                    <div class="logo-text">BUDDIQ</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="drugjna files/analyser.html" target="_blank">Study Analyzer</a></li>
+                    <li><a href="sanjana files/quiz.html" target="_blank">Quiz Generator</a></li>
+                    <li><a href="shiva files/studySmartPlanner.html" target="_blank">Study Planner</a></li>
+                    <li><a href="himamshu files/about.html" target="_blank">About BUDDIQ</a></li>
+                    <li><a style="background-color: #DC143C; padding: 10px;border-radius: 15%;color: white;" href="himamshu files/chat.html" target="_blank">Chatbot</a></li>
+                </ul>
+
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">User</span>
+                    <button class="logout-button" id="logoutButton">Logout</button>
+                </div>
+            </nav>  
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Auth Required Message -->
+        <div class="auth-required" id="authRequired">
+            <h2>Please Sign In</h2>
+            <p>You need to be signed in to view your profile and track your exam scores.</p>
+            <a href="index.html" class="auth-button">Go to Sign In</a>
+        </div>
+
+        <!-- Profile Content (shown when authenticated) -->
+        <div id="profileContent" style="display: none;">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <div class="profile-info">
+                    <h1 id="profileName">User Name</h1>
+                    <p id="profileEmail">user@example.com</p>
+                    <p id="memberSince">Member since: Loading...</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalExams">0</div>
+                    <div class="stat-label">Total Exams</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="averageScore">0%</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="highestScore">0%</div>
+                    <div class="stat-label">Highest Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="improvement">--</div>
+                    <div class="stat-label">Improvement</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Add Exam Score Form -->
+                <div class="card">
+                    <h2><i class="fas fa-plus-circle"></i> Add Exam Score</h2>
+                    <form id="examScoreForm">
+                        <div class="form-group">
+                            <label for="examSubject">Subject/Exam Name</label>
+                            <input type="text" id="examSubject" placeholder="e.g., Mathematics, Physics, etc." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examScore">Score Obtained</label>
+                            <input type="number" id="examScore" min="0" step="0.01" placeholder="Enter your score" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="maxScore">Maximum Score</label>
+                            <input type="number" id="maxScore" min="1" step="0.01" value="100" placeholder="Maximum possible score" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examDate">Exam Date</label>
+                            <input type="date" id="examDate" required>
+                        </div>
+                        <button type="submit" class="btn">Add Score</button>
+                    </form>
+                </div>
+
+                <!-- Recent Exam Scores -->
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> Recent Exam Scores</h2>
+                    <div class="scores-list" id="scoresList">
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>No exam scores recorded yet. Add your first score to start tracking your progress!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progression Chart -->
+            <div class="card" style="margin-top: 30px;">
+                <h2><i class="fas fa-chart-line"></i> Progress Chart</h2>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAy8q2iloXSLHQjCZbdjFRN5A12F0SXX70",
+            authDomain: "buddiq-755b7.firebaseapp.com",
+            databaseURL: "https://buddiq-755b7-default-rtdb.firebaseio.com",
+            projectId: "buddiq-755b7",
+            storageBucket: "buddiq-755b7.firebasestorage.app",
+            messagingSenderId: "1001002576339",
+            appId: "1:1001002576339:web:64bdf1cf0efd021ba16726",
+            measurementId: "G-KMGJXNQV8Q"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // DOM Elements
+        const authRequired = document.getElementById('authRequired');
+        const profileContent = document.getElementById('profileContent');
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const memberSince = document.getElementById('memberSince');
+        const logoutButton = document.getElementById('logoutButton');
+        const examScoreForm = document.getElementById('examScoreForm');
+        const scoresList = document.getElementById('scoresList');
+        const progressChart = document.getElementById('progressChart');
+
+        // Chart instance
+        let chart = null;
+
+        // Set today's date as default
+        document.getElementById('examDate').valueAsDate = new Date();
+
+        // Update UI based on authentication state
+        function updateUI(user) {
+            if (user) {
+                // User is signed in
+                authRequired.style.display = 'none';
+                profileContent.style.display = 'block';
+                userInfo.style.display = 'flex';
+                
+                // Set user name and avatar
+                const displayName = user.displayName || 'User';
+                userName.textContent = displayName;
+                userAvatar.textContent = displayName.charAt(0).toUpperCase();
+                profileName.textContent = displayName;
+                profileEmail.textContent = user.email || 'No email';
+                profileAvatar.textContent = displayName.charAt(0).toUpperCase();
+                
+                // Load user data
+                loadUserProfile(user.uid);
+                loadExamScores(user.uid);
+            } else {
+                // User is signed out
+                authRequired.style.display = 'block';
+                profileContent.style.display = 'none';
+                userInfo.style.display = 'none';
+            }
+        }
+
+        // Load user profile data
+        function loadUserProfile(userId) {
+            const userRef = database.ref('users/' + userId);
+            userRef.once('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData && userData.createdAt) {
+                    const date = new Date(userData.createdAt);
+                    memberSince.textContent = 'Member since: ' + date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+            });
+        }
+
+        // Load exam scores
+        function loadExamScores(userId) {
+            const scoresRef = database.ref('examScores/' + userId);
+            scoresRef.orderByChild('timestamp').on('value', (snapshot) => {
+                const scores = snapshot.val();
+                const scoresArray = [];
+                
+                if (scores) {
+                    Object.keys(scores).forEach(key => {
+                        scoresArray.push({
+                            id: key,
+                            ...scores[key]
+                        });
+                    });
+                    
+                    // Sort by timestamp (newest first)
+                    scoresArray.sort((a, b) => b.timestamp - a.timestamp);
+                }
+                
+                displayScores(scoresArray);
+                updateStats(scoresArray);
+                updateChart(scoresArray);
+            });
+        }
+
+        // Display exam scores
+        function displayScores(scoresArray) {
+            if (scoresArray.length === 0) {
+                scoresList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No exam scores recorded yet. Add your first score to start tracking your progress!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            scoresList.innerHTML = '';
+            scoresArray.forEach(score => {
+                const percentage = ((score.score / score.maxScore) * 100).toFixed(1);
+                const date = new Date(score.timestamp).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item';
+                scoreItem.innerHTML = `
+                    <div class="score-info">
+                        <strong>${score.subject}</strong>
+                        <small>${date}</small>
+                    </div>
+                    <div class="score-value">${percentage}%</div>
+                    <button class="delete-btn" onclick="deleteScore('${score.id}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                scoresList.appendChild(scoreItem);
+            });
+        }
+
+        // Update statistics
+        function updateStats(scoresArray) {
+            const totalExams = document.getElementById('totalExams');
+            const averageScore = document.getElementById('averageScore');
+            const highestScore = document.getElementById('highestScore');
+            const improvement = document.getElementById('improvement');
+            
+            totalExams.textContent = scoresArray.length;
+            
+            if (scoresArray.length === 0) {
+                averageScore.textContent = '0%';
+                highestScore.textContent = '0%';
+                improvement.textContent = '--';
+                return;
+            }
+            
+            // Calculate average
+            const percentages = scoresArray.map(s => (s.score / s.maxScore) * 100);
+            const avg = percentages.reduce((a, b) => a + b, 0) / percentages.length;
+            averageScore.textContent = avg.toFixed(1) + '%';
+            
+            // Find highest score
+            const highest = Math.max(...percentages);
+            highestScore.textContent = highest.toFixed(1) + '%';
+            
+            // Calculate improvement (compare first and last score)
+            if (scoresArray.length >= 2) {
+                const firstScore = (scoresArray[scoresArray.length - 1].score / scoresArray[scoresArray.length - 1].maxScore) * 100;
+                const lastScore = (scoresArray[0].score / scoresArray[0].maxScore) * 100;
+                const improvementValue = lastScore - firstScore;
+                improvement.textContent = (improvementValue >= 0 ? '+' : '') + improvementValue.toFixed(1) + '%';
+            } else {
+                improvement.textContent = '--';
+            }
+        }
+
+        // Update chart
+        function updateChart(scoresArray) {
+            if (scoresArray.length === 0) {
+                if (chart) {
+                    chart.destroy();
+                }
+                return;
+            }
+            
+            // Sort by timestamp (oldest first for chart)
+            const sortedScores = [...scoresArray].sort((a, b) => a.timestamp - b.timestamp);
+            
+            const labels = sortedScores.map(score => {
+                const date = new Date(score.timestamp);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+            
+            const data = sortedScores.map(score => {
+                return ((score.score / score.maxScore) * 100).toFixed(1));
+            });
+            
+            const ctx = progressChart.getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Exam Score (%)',
+                        data: data,
+                        borderColor: '#DC143C',
+                        backgroundColor: 'rgba(220, 20, 60, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#DC143C',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Score (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Delete score
+        function deleteScore(scoreId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            if (confirm('Are you sure you want to delete this exam score?')) {
+                database.ref('examScores/' + user.uid + '/' + scoreId).remove()
+                    .then(() => {
+                        console.log('Score deleted successfully');
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting score:', error);
+                        alert('Error deleting score. Please try again.');
+                    });
+            }
+        }
+
+        // Add exam score
+        examScoreForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Please sign in to add exam scores.');
+                return;
+            }
+            
+            const subject = document.getElementById('examSubject').value.trim();
+            const score = parseFloat(document.getElementById('examScore').value);
+            const maxScore = parseFloat(document.getElementById('maxScore').value);
+            const examDate = document.getElementById('examDate').value;
+            
+            if (score < 0 || score > maxScore) {
+                alert('Score must be between 0 and ' + maxScore);
+                return;
+            }
+            
+            const timestamp = new Date(examDate).getTime();
+            
+            const scoreData = {
+                subject: subject,
+                score: score,
+                maxScore: maxScore,
+                date: examDate,
+                timestamp: timestamp
+            };
+            
+            database.ref('examScores/' + user.uid).push(scoreData)
+                .then(() => {
+                    alert('Exam score added successfully!');
+                    examScoreForm.reset();
+                    document.getElementById('examDate').valueAsDate = new Date();
+                    document.getElementById('maxScore').value = 100;
+                })
+                .catch((error) => {
+                    console.error('Error adding score:', error);
+                    alert('Error adding score. Please try again.');
+                });
+        });
+
+        // Logout
+        logoutButton.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    console.error('Logout error:', error);
+                });
+        });
+
+        // Auth state observer
+        auth.onAuthStateChanged((user) => {
+            updateUI(user);
+        });
+    </script>
+</body>
+</html>
+
