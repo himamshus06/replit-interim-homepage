@@ -503,7 +503,12 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        let app;
+        try {
+            app = firebase.app();
+        } catch (e) {
+            app = firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
         const database = firebase.database();
 
@@ -525,8 +530,13 @@
         // Chart instance
         let chart = null;
 
-        // Set today's date as default
-        document.getElementById('examDate').valueAsDate = new Date();
+        // Set today's date as default when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const examDateInput = document.getElementById('examDate');
+            if (examDateInput) {
+                examDateInput.valueAsDate = new Date();
+            }
+        });
 
         // Update UI based on authentication state
         function updateUI(user) {
@@ -687,7 +697,7 @@
             });
             
             const data = sortedScores.map(score => {
-                return ((score.score / score.maxScore) * 100).toFixed(1));
+                return parseFloat(((score.score / score.maxScore) * 100).toFixed(1));
             });
             
             const ctx = progressChart.getContext('2d');
@@ -824,9 +834,18 @@
                 });
         });
 
+        // Check current auth state immediately
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            updateUI(currentUser);
+        }
+
         // Auth state observer
         auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? 'User signed in' : 'User signed out');
             updateUI(user);
+        }, (error) => {
+            console.error('Auth state observer error:', error);
         });
     </script>
 </body>
