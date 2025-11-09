@@ -369,6 +369,151 @@
         .auth-button:hover {
             background-color: var(--secondary);
         }
+
+        /* Goals Section Styles */
+        .goals-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .goal-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .goal-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .goal-item.completed {
+            border-left-color: #28a745;
+            background-color: #f0f9f0;
+        }
+
+        .goal-item.overdue {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .goal-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .goal-progress {
+            margin-top: 15px;
+        }
+
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 25px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar.completed {
+            background: linear-gradient(90deg, #28a745, #20c997);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .goal-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .status-completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-overdue {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -486,6 +631,48 @@
                     <canvas id="progressChart"></canvas>
                 </div>
             </div>
+
+            <!-- Goals Section -->
+            <div class="content-grid" style="margin-top: 30px;">
+                <!-- Add Goal Form -->
+                <div class="card">
+                    <h2><i class="fas fa-bullseye"></i> Set New Goal</h2>
+                    <form id="goalForm">
+                        <div class="form-group">
+                            <label for="goalName">Goal Name</label>
+                            <input type="text" id="goalName" placeholder="e.g., Achieve 90% in Mathematics" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="goalSubject">Subject</label>
+                            <input type="text" id="goalSubject" placeholder="e.g., Mathematics, Physics" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="targetScore">Target Score (%)</label>
+                            <input type="number" id="targetScore" min="0" max="100" step="0.1" placeholder="Enter target percentage" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="goalDate">Target Date</label>
+                            <input type="date" id="goalDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="goalDescription">Description (Optional)</label>
+                            <textarea id="goalDescription" rows="3" placeholder="Add any additional details about your goal..."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Create Goal</button>
+                    </form>
+                </div>
+
+                <!-- Goals List -->
+                <div class="card">
+                    <h2><i class="fas fa-tasks"></i> My Goals</h2>
+                    <div class="goals-list" id="goalsList">
+                        <div class="empty-state">
+                            <i class="fas fa-bullseye"></i>
+                            <p>No goals set yet. Create your first goal to start tracking your progress!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -526,6 +713,8 @@
         const examScoreForm = document.getElementById('examScoreForm');
         const scoresList = document.getElementById('scoresList');
         const progressChart = document.getElementById('progressChart');
+        const goalForm = document.getElementById('goalForm');
+        const goalsList = document.getElementById('goalsList');
 
         // Chart instance
         let chart = null;
@@ -535,6 +724,14 @@
             const examDateInput = document.getElementById('examDate');
             if (examDateInput) {
                 examDateInput.valueAsDate = new Date();
+            }
+            
+            // Set goal date to 30 days from now by default
+            const goalDateInput = document.getElementById('goalDate');
+            if (goalDateInput) {
+                const futureDate = new Date();
+                futureDate.setDate(futureDate.getDate() + 30);
+                goalDateInput.valueAsDate = futureDate;
             }
         });
 
@@ -557,6 +754,7 @@
                 // Load user data
                 loadUserProfile(user.uid);
                 loadExamScores(user.uid);
+                loadGoals(user.uid);
             } else {
                 // User is signed out
                 authRequired.style.display = 'block';
@@ -816,12 +1014,243 @@
                     examScoreForm.reset();
                     document.getElementById('examDate').valueAsDate = new Date();
                     document.getElementById('maxScore').value = 100;
+                    // Reload goals to update progress
+                    loadGoals(user.uid);
                 })
                 .catch((error) => {
                     console.error('Error adding score:', error);
                     alert('Error adding score. Please try again.');
                 });
         });
+
+        // Load goals
+        function loadGoals(userId) {
+            const goalsRef = database.ref('goals/' + userId);
+            goalsRef.orderByChild('createdAt').on('value', (snapshot) => {
+                const goals = snapshot.val();
+                const goalsArray = [];
+                
+                if (goals) {
+                    Object.keys(goals).forEach(key => {
+                        goalsArray.push({
+                            id: key,
+                            ...goals[key]
+                        });
+                    });
+                    
+                    // Sort by target date (upcoming first)
+                    goalsArray.sort((a, b) => {
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        return a.targetDate - b.targetDate;
+                    });
+                }
+                
+                displayGoals(goalsArray, userId);
+            });
+        }
+
+        // Display goals
+        function displayGoals(goalsArray, userId) {
+            if (goalsArray.length === 0) {
+                goalsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bullseye"></i>
+                        <p>No goals set yet. Create your first goal to start tracking your progress!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            goalsList.innerHTML = '';
+            
+            // Get exam scores to calculate progress
+            database.ref('examScores/' + userId).once('value', (snapshot) => {
+                const scores = snapshot.val();
+                const scoresArray = [];
+                
+                if (scores) {
+                    Object.keys(scores).forEach(key => {
+                        scoresArray.push(scores[key]);
+                    });
+                }
+                
+                goalsArray.forEach(goal => {
+                    const goalItem = createGoalItem(goal, scoresArray);
+                    goalsList.appendChild(goalItem);
+                });
+            });
+        }
+
+        // Create goal item element
+        function createGoalItem(goal, scoresArray) {
+            const goalItem = document.createElement('div');
+            goalItem.className = 'goal-item';
+            
+            const targetDate = new Date(goal.targetDate);
+            const now = new Date();
+            const isOverdue = !goal.completed && targetDate < now;
+            const isCompleted = goal.completed;
+            
+            if (isCompleted) {
+                goalItem.classList.add('completed');
+            } else if (isOverdue) {
+                goalItem.classList.add('overdue');
+            }
+            
+            // Calculate current progress from exam scores
+            const subjectScores = scoresArray.filter(score => 
+                score.subject.toLowerCase().includes(goal.subject.toLowerCase()) ||
+                goal.subject.toLowerCase().includes(score.subject.toLowerCase())
+            );
+            
+            let currentScore = 0;
+            let progressPercentage = 0;
+            
+            if (subjectScores.length > 0) {
+                // Get the most recent score for this subject
+                const latestScore = subjectScores.sort((a, b) => b.timestamp - a.timestamp)[0];
+                currentScore = (latestScore.score / latestScore.maxScore) * 100;
+                progressPercentage = Math.min(100, (currentScore / goal.targetScore) * 100);
+            }
+            
+            const statusClass = isCompleted ? 'status-completed' : (isOverdue ? 'status-overdue' : 'status-active');
+            const statusText = isCompleted ? 'Completed' : (isOverdue ? 'Overdue' : 'Active');
+            
+            goalItem.innerHTML = `
+                <div class="goal-header">
+                    <div>
+                        <div class="goal-title">
+                            ${goal.name}
+                            <span class="goal-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="goal-meta">
+                            <i class="fas fa-book"></i> ${goal.subject} | 
+                            <i class="fas fa-calendar"></i> Target: ${targetDate.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            })}
+                        </div>
+                        ${goal.description ? `<p style="margin-top: 10px; color: #666; font-size: 14px;">${goal.description}</p>` : ''}
+                    </div>
+                </div>
+                <div class="goal-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar ${isCompleted ? 'completed' : ''}" style="width: ${isCompleted ? 100 : progressPercentage}%">
+                            ${isCompleted ? '100%' : progressPercentage.toFixed(1) + '%'}
+                        </div>
+                    </div>
+                    <div class="progress-text">
+                        <span>Current: ${currentScore.toFixed(1)}%</span>
+                        <span>Target: ${goal.targetScore}%</span>
+                    </div>
+                </div>
+                <div class="goal-actions">
+                    ${!isCompleted ? `
+                        <button class="btn btn-success btn-small" onclick="markGoalCompleted('${goal.id}')">
+                            <i class="fas fa-check"></i> Mark Complete
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-secondary btn-small" onclick="deleteGoal('${goal.id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            
+            return goalItem;
+        }
+
+        // Add goal
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Please sign in to create goals.');
+                return;
+            }
+            
+            const name = document.getElementById('goalName').value.trim();
+            const subject = document.getElementById('goalSubject').value.trim();
+            const targetScore = parseFloat(document.getElementById('targetScore').value);
+            const goalDate = document.getElementById('goalDate').value;
+            const description = document.getElementById('goalDescription').value.trim();
+            
+            if (targetScore < 0 || targetScore > 100) {
+                alert('Target score must be between 0 and 100.');
+                return;
+            }
+            
+            const targetDate = new Date(goalDate).getTime();
+            const now = Date.now();
+            
+            if (targetDate < now) {
+                alert('Target date must be in the future.');
+                return;
+            }
+            
+            const goalData = {
+                name: name,
+                subject: subject,
+                targetScore: targetScore,
+                targetDate: targetDate,
+                description: description || '',
+                completed: false,
+                createdAt: now
+            };
+            
+            database.ref('goals/' + user.uid).push(goalData)
+                .then(() => {
+                    alert('Goal created successfully!');
+                    goalForm.reset();
+                    const futureDate = new Date();
+                    futureDate.setDate(futureDate.getDate() + 30);
+                    document.getElementById('goalDate').valueAsDate = futureDate;
+                })
+                .catch((error) => {
+                    console.error('Error creating goal:', error);
+                    alert('Error creating goal. Please try again.');
+                });
+        });
+
+        // Mark goal as completed (global function for onclick)
+        window.markGoalCompleted = function(goalId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            if (confirm('Mark this goal as completed?')) {
+                database.ref('goals/' + user.uid + '/' + goalId).update({
+                    completed: true,
+                    completedAt: Date.now()
+                })
+                .then(() => {
+                    console.log('Goal marked as completed');
+                })
+                .catch((error) => {
+                    console.error('Error updating goal:', error);
+                    alert('Error updating goal. Please try again.');
+                });
+            }
+        };
+
+        // Delete goal (global function for onclick)
+        window.deleteGoal = function(goalId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            if (confirm('Are you sure you want to delete this goal?')) {
+                database.ref('goals/' + user.uid + '/' + goalId).remove()
+                    .then(() => {
+                        console.log('Goal deleted successfully');
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting goal:', error);
+                        alert('Error deleting goal. Please try again.');
+                    });
+            }
+        };
 
         // Logout
         logoutButton.addEventListener('click', () => {
