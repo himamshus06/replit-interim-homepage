@@ -13,6 +13,69 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+         header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .cta-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--secondary);
+        }
 
         :root {
             --primary: #DC143C;
@@ -55,19 +118,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
         }
 
         .logo-text {
@@ -121,6 +171,7 @@
         .section-title {
             text-align: center;
             margin-bottom: 60px;
+            margin-top: -40px;
         }
 
         .section-title h2 {
@@ -136,17 +187,18 @@
         }
 
         .problem-grid {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 10px;
             margin-bottom: 60px;
+            display: flex;margin-bottom: -20px;
         }
 
         .problem-card {
             background-color: var(--light);
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             border-left: 5px solid var(--primary);
+            width: 80%;
         }
 
         .problem-card h3 {
@@ -163,6 +215,7 @@
         /* Statistics Section */
         .stats-section {
             padding: 80px 0;
+            margin-top: -30px;
             background-color: var(--background);
         }
 
@@ -290,8 +343,8 @@
         <div class="container">
             <nav>
                 <div class="logo-container">
-                    <div class="logo-icon">
-                        <i class="fas fa-brain"></i>
+                    <div class="mmmm">
+                        <img style="width: 80px;" src="Screenshot 2025-11-08 194905 (1).png" alt="logo">
                     </div>
                     <div class="logo-text">BUDDIQ</div>
                 </div>
@@ -307,7 +360,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>About BUDDIQ</h1>
+            <h1>About BUDDIQ</h1><h4 style="margin-top: -30px;margin-bottom: 30px;">Buddy-Iq</h4>
             <p>Transforming Indian Higher-Secondary Education Through Intelligent Study Management</p>
         </div>
     </section>

@@ -6,6 +6,11 @@
     <title>Advanced PDF to Quiz Generator with Referential Options</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -502,9 +507,80 @@
                 margin-bottom: 8px;
             }
         }
+        /* Header & Navigation */
+        .containerr {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .cta-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--secondary);
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="header">
             <h1>Advanced PDF to Quiz Generator</h1>
@@ -592,6 +668,23 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAy8q2iloXSLHQjCZbdjFRN5A12F0SXX70",
+            authDomain: "buddiq-755b7.firebaseapp.com",
+            databaseURL: "https://buddiq-755b7-default-rtdb.firebaseio.com",
+            projectId: "buddiq-755b7",
+            storageBucket: "buddiq-755b7.firebasestorage.app",
+            messagingSenderId: "1001002576339",
+            appId: "1:1001002576339:web:64bdf1cf0efd021ba16726",
+            measurementId: "G-KMGJXNQV8Q"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
         // Application State
         const state = {
             currentFile: null,
@@ -1543,8 +1636,43 @@
                 `;
             });
             
+            // Save score to Firebase if user is logged in
+            saveQuizScore(score, totalQuestions);
+            
             resultsContainer.classList.add('active');
             quizContainer.classList.remove('active');
+        }
+
+        // Save quiz score to Firebase
+        function saveQuizScore(score, maxScore) {
+            const user = auth.currentUser;
+            if (!user) {
+                // User not logged in, don't save
+                return;
+            }
+            
+            // Get file name for subject, or use default
+            const fileName = state.currentFile ? state.currentFile.name : 'Quiz';
+            const subjectName = fileName.replace(/\.[^/.]+$/, ''); // Remove file extension
+            
+            const timestamp = Date.now();
+            const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            
+            const scoreData = {
+                subject: subjectName + ' Quiz',
+                score: score,
+                maxScore: maxScore,
+                date: date,
+                timestamp: timestamp
+            };
+            
+            database.ref('examScores/' + user.uid).push(scoreData)
+                .then(() => {
+                    console.log('Quiz score saved successfully');
+                })
+                .catch((error) => {
+                    console.error('Error saving quiz score:', error);
+                });
         }
 
         function restartQuiz() {
