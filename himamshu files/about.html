@@ -6,204 +6,303 @@
     <title>About Us - BUDDIQ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    :root {
-        --primary: #DC143C;
-        --secondary: #F75270;
-        --light: #F7CAC9;
-        --background: #FDEBD0;
-    }
-
-    body {
-        background-color: var(--background);
-        color: #333;
-        line-height: 1.65;
-    }
-
-    .container {
-        width: 92%;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    /* HEADER */
-    header {
-        background: #fff;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        position: fixed;
-        width: 100%;
-        top: 0;
-        z-index: 100;
-        padding: 15px 0;
-    }
-
-    nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo-text {
-        font-size: 26px;
-        font-weight: 700;
-        color: var(--primary);
-    }
-
-    .nav-links {
-        display: flex;
-        list-style: none;
-        gap: 25px;
-    }
-
-    .nav-links a {
-        text-decoration: none;
-        color: #444;
-        font-weight: 500;
-        font-size: 15px;
-        transition: 0.3s;
-    }
-
-    .nav-links a:hover {
-        color: var(--primary);
-    }
-
-    /* HERO */
-    .hero {
-        padding: 120px 0 90px;
-        text-align: center;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        border-radius: 0 0 40px 40px;
-        box-shadow: 0 6px 25px rgba(0,0,0,0.15);
-    }
-
-    .hero h1 {
-        font-size: 44px;
-        font-weight: 800;
-        margin-bottom: 15px;
-    }
-
-    .hero p {
-        font-size: 19px;
-        opacity: 0.95;
-    }
-
-    /* SECTIONS */
-    section {
-        padding: 90px 0;
-    }
-
-    .section-title {
-        text-align: center;
-        margin-bottom: 60px;
-    }
-
-    .section-title h2 {
-        font-size: 34px;
-        font-weight: 700;
-        color: var(--primary);
-        margin-bottom: 10px;
-    }
-
-    .section-title p {
-        font-size: 16px;
-        color: #666;
-    }
-
-    /* GRID CARDS (Modern glassy cards) */
-    .problem-grid,
-    .solution-grid,
-    .benefits-grid,
-    .charts-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-        gap: 28px;
-    }
-
-    .problem-card,
-    .solution-card,
-    .benefit-item,
-    .chart-card {
-        background: rgba(255,255,255,0.9);
-        backdrop-filter: blur(6px);
-        padding: 28px;
-        border-radius: 18px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        border: 1px solid rgba(247,82,112,0.15);
-        transition: 0.3s ease;
-    }
-
-    .problem-card:hover,
-    .solution-card:hover,
-    .benefit-item:hover,
-    .chart-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    }
-
-    .problem-card h3 {
-        color: var(--primary);
-        font-size: 20px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* CHART WRAPPER */
-    .chart-wrapper {
-        height: 260px;
-    }
-
-    /* BENEFITS CARD */
-    .benefit-item .number {
-        font-size: 42px;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 8px;
-    }
-
-    /* FOOTER */
-    footer {
-        text-align: center;
-        padding: 35px 0;
-        background: #222;
-        color: white;
-        margin-top: 60px;
-    }
-
-    footer a {
-        color: var(--light);
-        text-decoration: none;
-    }
-
-    footer a:hover {
-        text-decoration: underline;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 30px;
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        :root {
+            --primary: #DC143C;
+            --secondary: #F75270;
+            --light: #F7CAC9;
+            --background: #FDEBD0;
+        }
+
+        body {
+            background-color: var(--background);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
         .hero {
-            border-radius: 0 0 20px 20px;
+            padding: 150px 0 80px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
         }
-        nav .nav-links {
-            display: none;
-        }
-    }
-</style>
 
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .problem-card {
+            background-color: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .problem-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .problem-card p {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            padding: 80px 0;
+            background-color: var(--background);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .chart-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Solution Section */
+        .solution-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .solution-card {
+            background: linear-gradient(135deg, var(--light), white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .solution-card .icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .solution-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 80px 0;
+            background-color: var(--background);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .benefit-item {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-item .number {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .benefit-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="logo-text">BUDDIQ</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <!-- Hero Section -->
     <section class="hero">

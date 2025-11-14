@@ -234,159 +234,368 @@ def create_gradio_interface():
     """Create and configure Gradio interface"""
     
     # Modern, user-friendly CSS with Color Hunt palette
-custom_css = """
-:root {
-    --primary: #DC143C;
-    --secondary: #F75270;
-    --light: #F7CAC9;
-    --background: #FDEBD0;
-}
-
-/* Background */
-.gradio-container {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, var(--background), var(--light));
-    min-height: 100vh;
-    padding: 22px;
-    color: #333;
-}
-
-/* HEADER */
-.header-section {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    padding: 35px;
-    border-radius: 22px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 10px 35px rgba(220,20,60,0.35);
-}
-.header-section h1 {
-    font-size: 42px;
-    font-weight: 800;
-    margin-bottom: 10px;
-}
-.header-section h2 {
-    opacity: 0.9;
-    font-size: 18px;
-}
-
-/* LEFT SIDEBAR */
-.markdown, .info-card, .examples {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(6px);
-    padding: 20px;
-    border-radius: 18px;
-    border: 1px solid rgba(247,82,112,0.18);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
-
-/* Example cards */
-.example {
-    background: linear-gradient(135deg, var(--background), var(--light));
-    border-radius: 14px;
-    padding: 14px;
-    margin: 6px 0;
-    transition: 0.25s ease;
-    cursor: pointer;
-}
-.example:hover {
-    background: linear-gradient(135deg, var(--secondary), var(--primary));
-    color: white;
-    transform: translateX(6px);
-    box-shadow: 0 8px 14px rgba(220,20,60,0.25);
-}
-
-/* CHAT WINDOW */
-.gr-chatbot {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(8px);
-    border-radius: 20px;
-    border: 1px solid rgba(247,82,112,0.18);
-    box-shadow: 0 10px 30px rgba(220,20,60,0.16);
-    padding: 14px;
-}
-
-/* Chat bubbles */
-.message {
-    font-size: 15px !important;
-    padding: 14px 18px;
-    border-radius: 18px;
-    margin: 8px 0 !important;
-    max-width: 85%;
-    line-height: 1.6;
-}
-
-/* User bubble */
-.message.user {
-    background: linear-gradient(135deg, var(--secondary), var(--primary));
-    color: white;
-    border-bottom-right-radius: 6px;
-    margin-left: auto;
-    box-shadow: 0 4px 10px rgba(220,20,60,0.25);
-}
-
-/* Bot bubble */
-.message.bot {
-    background: linear-gradient(135deg, var(--background), var(--light));
-    border-bottom-left-radius: 6px;
-    margin-right: auto;
-    color: #222;
-    box-shadow: 0 4px 10px rgba(247,82,112,0.15);
-}
-
-/* INPUT BOX */
-textarea, input[type="text"] {
-    border-radius: 14px !important;
-    border: 2px solid var(--light) !important;
-    background: white !important;
-    padding: 16px !important;
-    transition: 0.3s;
-}
-textarea:focus, input[type="text"]:focus {
-    border-color: var(--secondary) !important;
-    box-shadow: 0 0 0 4px rgba(247,82,112,0.2);
-}
-
-/* BUTTONS */
-button {
-    border-radius: 14px !important;
-    padding: 14px 26px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    transition: 0.28s ease !important;
-}
-
-button.primary {
-    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
-    color: white !important;
-    box-shadow: 0 8px 22px rgba(220,20,60,0.35);
-}
-button.primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 28px rgba(220,20,60,0.4);
-}
-
-button:not(.primary) {
-    background: white !important;
-    border: 2px solid var(--secondary) !important;
-    color: var(--primary) !important;
-}
-button:not(.primary):hover {
-    background: var(--light) !important;
-    box-shadow: 0 4px 18px rgba(247,82,112,0.25);
-    transform: translateY(-3px);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
-}
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--secondary), var(--primary));
-    border-radius: 10px;
-}
-"""
-
+    custom_css = """
+    /* Global Reset & Base Styles */
+    * {
+        box-sizing: border-box;
+    }
+    
+    /* Main container with beautiful gradient background */
+    .gradio-container {
+        font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #fdebd0 0%, #f7cac9 50%, #fdebd0 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    /* Header Section - Modern & Eye-catching */
+    .gradio-container .header-section {
+        background: linear-gradient(135deg, #dc143c 0%, #f75270 100%);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(220, 20, 60, 0.25);
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    
+    .gradio-container h1 {
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 2.5em;
+        margin: 0;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
+    }
+    
+    .gradio-container h2 {
+        color: #ffffff;
+        font-weight: 500;
+        font-size: 1.2em;
+        margin: 10px 0 0 0;
+        opacity: 0.95;
+    }
+    
+    .gradio-container h3 {
+        color: #dc143c;
+        font-weight: 700;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #f75270;
+    }
+    
+    /* Markdown sections with glassmorphism effect */
+    .gradio-container .markdown {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.1);
+        margin: 15px 0;
+        border: 1px solid rgba(247, 82, 112, 0.2);
+    }
+    
+    /* Chatbot Interface - Modern Card Design */
+    .chatbot {
+        min-height: 550px;
+        max-height: 600px;
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 8px 32px rgba(220, 20, 60, 0.15);
+        padding: 20px;
+        overflow-y: auto;
+    }
+    
+    /* Chat Message Bubbles */
+    .chatbot .message {
+        padding: 14px 18px;
+        margin: 12px 0;
+        border-radius: 18px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.6;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* User messages - Right aligned with pink gradient */
+    .chatbot .message.user-message,
+    .chatbot .message[data-author="user"] {
+        background: linear-gradient(135deg, #f75270 0%, #dc143c 100%);
+        color: #000000;
+        margin-left: auto;
+        margin-right: 0;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.2);
+    }
+    
+    /* Bot messages - Left aligned with cream background */
+    .chatbot .message.bot-message,
+    .chatbot .message[data-author="bot"] {
+        background: linear-gradient(135deg, #fdebd0 0%, #f7cac9 100%);
+        color: #333333;
+        margin-left: 0;
+        margin-right: auto;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 4px 12px rgba(247, 82, 112, 0.15);
+    }
+    
+    /* Text Input - Modern & Accessible */
+    .gradio-container textarea,
+    .gradio-container input[type="text"] {
+        background: #ffffff;
+        border: 2px solid #f7cac9;
+        border-radius: 12px;
+        padding: 16px 20px;
+        font-size: 15px;
+        font-family: inherit;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        resize: none;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.08);
+    }
+    
+    .gradio-container textarea:focus,
+    .gradio-container input[type="text"]:focus {
+        border-color: #f75270;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(247, 82, 112, 0.15), 0 4px 16px rgba(220, 20, 60, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .gradio-container textarea::placeholder,
+    .gradio-container input[type="text"]::placeholder {
+        color: #999;
+        opacity: 0.7;
+    }
+    
+    /* Primary Button - Send Button */
+    .gradio-container button.primary {
+        background: linear-gradient(135deg, #dc143c 0%, #f75270 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 32px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 16px rgba(220, 20, 60, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .gradio-container button.primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .gradio-container button.primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(220, 20, 60, 0.4);
+        background: linear-gradient(135deg, #f75270 0%, #dc143c 100%);
+    }
+    
+    .gradio-container button.primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .gradio-container button.primary:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    }
+    
+    /* Secondary Button - Clear Button */
+    .gradio-container button:not(.primary) {
+        background: #ffffff;
+        color: #dc143c;
+        border: 2px solid #f75270;
+        border-radius: 12px;
+        padding: 16px 32px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(247, 82, 112, 0.15);
+    }
+    
+    .gradio-container button:not(.primary):hover {
+        background: #f7cac9;
+        border-color: #dc143c;
+        color: #dc143c;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 16px rgba(247, 82, 112, 0.25);
+    }
+    
+    .gradio-container button:not(.primary):active {
+        transform: translateY(-1px);
+    }
+    
+    /* Examples Section - Interactive Cards */
+    .gradio-container .examples {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(247, 82, 112, 0.2);
+        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.1);
+    }
+    
+    .gradio-container .example {
+        background: linear-gradient(135deg, #fdebd0 0%, #f7cac9 100%);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 14px;
+        color: #333;
+        box-shadow: 0 2px 8px rgba(220, 20, 60, 0.1);
+    }
+    
+    .gradio-container .example:hover {
+        background: linear-gradient(135deg, #f75270 0%, #dc143c 100%);
+        color: #ffffff;
+        border-color: #dc143c;
+        transform: translateX(8px) translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 20, 60, 0.3);
+    }
+    
+    /* Labels - Clear & Prominent */
+    .gradio-container label {
+        color: #dc143c;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 10px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 14px;
+    }
+    
+    /* Info Cards */
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 15px 0;
+        border-left: 4px solid #f75270;
+        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.1);
+    }
+    
+    .info-card ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .info-card li {
+        padding: 8px 0;
+        padding-left: 25px;
+        position: relative;
+        color: #333;
+    }
+    
+    .info-card li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #dc143c;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    
+    /* Scrollbar - Custom Styled */
+    .gradio-container ::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .gradio-container ::-webkit-scrollbar-track {
+        background: #f7cac9;
+        border-radius: 10px;
+    }
+    
+    .gradio-container ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #f75270 0%, #dc143c 100%);
+        border-radius: 10px;
+        border: 2px solid #f7cac9;
+    }
+    
+    .gradio-container ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #dc143c 0%, #f75270 100%);
+    }
+    
+    /* Row and Column Spacing */
+    .gradio-container .row {
+        gap: 20px;
+        margin: 20px 0;
+    }
+    
+    .gradio-container .column {
+        gap: 20px;
+    }
+    
+    /* Focus States for Accessibility */
+    .gradio-container *:focus-visible {
+        outline: 3px solid #f75270;
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .gradio-container {
+            padding: 10px;
+        }
+        
+        .gradio-container h1 {
+            font-size: 1.8em;
+        }
+        
+        .chatbot {
+            min-height: 400px;
+            max-height: 450px;
+        }
+    }
+    
+    /* Loading Animation */
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+    
+    .gradio-container .loading {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    """
+    
     with gr.Blocks(css=custom_css, title="EduBot - Study Assistant", theme=gr.themes.Soft()) as demo:
         # Header Section
         with gr.Row():
